@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import utils from './Utils';
 import {
   Ion,
@@ -8,15 +8,19 @@ import {
   Cartographic,
   Math,
   Cartesian2,
+  Cartesian3,
   HorizontalOrigin,
   VerticalOrigin,
 } from 'cesium';
 //import { Cesium } from cesium-react;
 import '../node_modules/cesium/Build/Cesium/Widgets/widgets.css';
+import CoordsFormComp from './CoordsFormComp';
 
 let cesiumViewer;
 
 const App = ({ title }) => {
+  const [moving, setMoving] = useState({ lon: null, lat: null });
+
   useLayoutEffect(() => {
     Ion.defaultAccessToken =
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJiMmZkNDMyOC0wOWM3LTQyOTQtYWU2ZS0yMjc2NGRjNGJlY2UiLCJpZCI6ODc5MjgsImlhdCI6MTY0OTAxNjU2NX0.abaJS2YS9TNnqSBxrUu8BEjtu_qq8eTagE-moYQrc4g';
@@ -45,19 +49,29 @@ const App = ({ title }) => {
 
     const handler = new ScreenSpaceEventHandler(scene.canvas);
 
-    // handler.setInputAction((movement) => {
-    //   console.log(`endPosition = ${movement.endPosition}`);
+    handler.setInputAction((movement) => {
+      //   console.log(`endPosition = ${movement.endPosition}`);
 
-    //   console.log(`scene.globe.ellipsoid = ${scene.globe.ellipsoid}`);
+      //   console.log(`scene.globe.ellipsoid = ${scene.globe.ellipsoid}`);
 
-    //   console.log(JSON.stringify(movement));
+      //   console.log(JSON.stringify(movement));
+      const cartesian = utils.convertSceneCoordinatesToCartesian(
+        movement.endPosition,
+        cesiumViewer
+      );
 
-    //   const cartesian = cesiumViewer.camera.pickEllipsoid(
-    //     movement.endPosition,
-    //     scene.globe.ellipsoid
-    //   );
-    //   //alert(movement);
-    // }, ScreenSpaceEventType.MOUSE_MOVE);
+      const strs = utils.convertCartesian2DegreesString(cartesian);
+
+      //setMoving({ lon: strs[0], lat: strs[1] });
+
+      entity.position = cartesian;
+      entity.label.show = true;
+      entity.label.text =
+        `Lon: ${`   ${strs[0]}`.slice(-7)}\u00B0` +
+        `\nLat: ${`   ${strs[1]}`.slice(-7)}\u00B0`;
+
+      //   //alert(movement);
+    }, ScreenSpaceEventType.MOUSE_MOVE);
 
     handler.setInputAction((pickObject) => {
       //const cartesian = cesiumViewer.camera.pickEllipsoid(
@@ -68,17 +82,32 @@ const App = ({ title }) => {
         pickObject.position,
         cesiumViewer
       );
-      alert(strs[0]);
+      //alert(strs[0]);
     }, ScreenSpaceEventType.LEFT_DOWN);
   }, []);
 
+  const setCoordsByForm = (coords) => {
+    // alert(`${coords.lon} ----- ${coords.lat}`);
+    var center = Cartesian3.fromDegrees(
+      parseFloat(coords.lon),
+      parseFloat(coords.lat)
+    );
+    cesiumViewer.camera.lookAt(
+      center,
+      new Cartesian3(0.0, 0.0, 4200000.0)
+    );
+  };
+
   return (
     <div>
-      {title}
+      {moving.lon}, {moving.lat}
       <div
         id="CesiumMap"
         style={{ width: '850px', height: '850px' }}
       ></div>
+      <div>
+        <CoordsFormComp callback={setCoordsByForm} />
+      </div>
     </div>
   );
 };

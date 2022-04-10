@@ -1,15 +1,15 @@
 import { Cartographic, Math } from 'cesium';
 
-const convertSceneCoordinatesToCartesian = (coords, viewer) => {
+const convertSceneCoordinatesToCartesian = (pixels, viewer) => {
   return viewer.camera.pickEllipsoid(
-    coords,
+    pixels,
     viewer.scene.globe.ellipsoid
   );
 };
 
-const convertSceneCoordinatesToDegreesString = (coords, viewer) => {
+const convertSceneCoordinatesToDegreesString = (pixels, viewer) => {
   const cartesian = convertSceneCoordinatesToCartesian(
-    coords,
+    pixels,
     viewer
   );
 
