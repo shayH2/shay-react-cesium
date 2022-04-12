@@ -5,6 +5,7 @@ import {
   Viewer,
   ScreenSpaceEventHandler,
   ScreenSpaceEventType,
+  Color,
   Cartographic,
   Math,
   Cartesian2,
@@ -30,6 +31,28 @@ const App = ({ title }) => {
     }
     cesiumViewer = new Viewer('CesiumMap');
 
+    const pointsArray = utils.getDummyPointsArray();
+
+    //alert(pointsArray.length);
+
+    for (let i = 0; i < pointsArray.length; i++) {
+      const point = pointsArray[i];
+
+      const cartesianPoint = Cartesian3.fromDegrees(
+        point[0],
+        point[1]
+      );
+
+      utils.myEllipse = cesiumViewer.entities.add({
+        position: cartesianPoint,
+        ellipse: {
+          semiMinorAxis: 25000.0,
+          semiMajorAxis: 40000.0,
+          material: Color.RED.withAlpha(0.5),
+        },
+      });
+    }
+
     const entity = cesiumViewer.entities.add({
       label: {
         show: false,
@@ -49,12 +72,9 @@ const App = ({ title }) => {
 
     const handler = new ScreenSpaceEventHandler(scene.canvas);
 
+    let myEllipse;
+
     handler.setInputAction((movement) => {
-      //   console.log(`endPosition = ${movement.endPosition}`);
-
-      //   console.log(`scene.globe.ellipsoid = ${scene.globe.ellipsoid}`);
-
-      //   console.log(JSON.stringify(movement));
       const cartesian = utils.convertSceneCoordinatesToCartesian(
         movement.endPosition,
         cesiumViewer
@@ -74,26 +94,46 @@ const App = ({ title }) => {
     }, ScreenSpaceEventType.MOUSE_MOVE);
 
     handler.setInputAction((pickObject) => {
-      //const cartesian = cesiumViewer.camera.pickEllipsoid(
-      //  pickObject.position,
-      //  scene.globe.ellipsoid
+      const cartesianPoint = cesiumViewer.camera.pickEllipsoid(
+        pickObject.position,
+        scene.globe.ellipsoid
+      );
+
+      //cesiumViewer.camera.lookAt(
+      //cartesianPoint,
+      //new Cartesian3(0.0, 0.0, 4200000.0)
       //);
+
       const strs = utils.convertSceneCoordinatesToDegreesString(
         pickObject.position,
         cesiumViewer
       );
+
+      myEllipse && cesiumViewer.entities.remove(myEllipse);
+
+      myEllipse = cesiumViewer.entities.add({
+        position: cartesianPoint,
+        ellipse: {
+          semiMinorAxis: 250000.0,
+          semiMajorAxis: 400000.0,
+          material: Color.BLUE.withAlpha(0.5),
+        },
+      });
+      //viewer.zoomTo(cesiumViewer.entities);
+
+      var ellipse = entity.ellipse; // For upcoming examples
+
       //alert(strs[0]);
     }, ScreenSpaceEventType.LEFT_DOWN);
   }, []);
 
   const setCoordsByForm = (coords) => {
-    // alert(`${coords.lon} ----- ${coords.lat}`);
-    var center = Cartesian3.fromDegrees(
+    var cartesianPoint = Cartesian3.fromDegrees(
       parseFloat(coords.lon),
       parseFloat(coords.lat)
     );
     cesiumViewer.camera.lookAt(
-      center,
+      cartesianPoint,
       new Cartesian3(0.0, 0.0, 4200000.0)
     );
   };

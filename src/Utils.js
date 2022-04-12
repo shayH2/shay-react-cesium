@@ -53,6 +53,28 @@ const convertCartesian2DegreesString = (cartesian) => {
   return result;
 };
 
+let pointsArray;
+
+const getDummyPointsArray = () => {
+  if (!pointsArray) pointsArray = initDummyPointsArray(100);
+
+  return pointsArray;
+};
+
+const initDummyPointsArray = (num) => {
+  var arr = [];
+
+  for (let i = 0; i < num; i++)
+    if (i % 2 === 0) arr.push([-82 + i * 0.1, 37 + i * 0.1]);
+    else arr.push([-82 - i * 0.1, 37 - i * 0.1]);
+
+  return arr;
+};
+
+const dummySearch = (cartesian) => {
+  if (!pointsArray) pointsArray = initDummyPointsArray();
+};
+
 // entity.position = cartesian;
 // entity.label.show = true;
 // entity.text = text;
@@ -63,4 +85,6 @@ export default {
   convertCartesian2DegreesString,
   convertSceneCoordinatesToCartesian,
   convertSceneCoordinatesToDegreesString,
+  getDummyPointsArray,
+  dummySearch,
 };

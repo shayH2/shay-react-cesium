@@ -1,42 +1,25 @@
-import React, { useState, useLayoutEffect } from 'react';
-import utils from './Utils';
-import {
-  Ion,
-  Viewer,
-  ScreenSpaceEventHandler,
-  ScreenSpaceEventType,
-  Cartographic,
-  Math,
-  Cartesian2,
-  HorizontalOrigin,
-  VerticalOrigin,
-} from 'cesium';
-//import { Cesium } from cesium-react;
-import '../node_modules/cesium/Build/Cesium/Widgets/widgets.css';
-
-let cesiumViewer;
+import React, { useState } from 'react';
 
 const CoordsFormComp = (props) => {
+  const [coords, setCoords] = useState({ lon: null, lat: null });
+
   const setLon = (e) => {
     setCoords({
-      lon: e.target.value, // || 'NA',
-      lat: coords.lat, // || 'NA',
+      lon: e.target.value,
+      lat: coords.lat,
     });
   };
 
   const setLat = (e) => {
     setCoords({
-      lon: coords.lon, // || 'NA',
-      lat: e.target.value, // || 'NA',
+      lon: coords.lon,
+      lat: e.target.value,
     });
   };
 
   const focusCoords = () => {
-    //alert(`${coords.lon}, ${coords.lat}`);
     props.callback && props.callback(coords);
   };
-
-  const [coords, setCoords] = useState({ lon: null, lat: null });
 
   return (
     <div>
@@ -55,7 +38,5 @@ const CoordsFormComp = (props) => {
     </div>
   );
 };
-
-export const getCesiumViewer = () => cesiumViewer;
 
 export default CoordsFormComp;
