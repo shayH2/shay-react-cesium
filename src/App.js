@@ -127,6 +127,27 @@ const App = ({ title }) => {
 
       var ellipse = entity.ellipse; // For upcoming examples
 
+      const degs = utils.convertCartesian2Degrees(cartesianPoint);
+
+      const found = utils.naiveSearch(degs);
+
+      if (Array.isArray(found) && found.length > 0) {
+        for (let i = 0; i < found.length; i++) {
+          const point0 = found[i];
+
+          const cartesian = utils.convertCartographic2Cartesian(point0);
+
+          const myEllipse0 = cesiumViewer.entities.add({
+            position: cartesian,
+            ellipse: {
+              semiMinorAxis: 250000.0,
+              semiMajorAxis: 400000.0,
+              material: Color.YELLOWGREEN.withAlpha(0.5),
+            },
+          });
+        }
+      }
+
       //alert(strs[0]);
     }, ScreenSpaceEventType.LEFT_DOWN);
   }, []);

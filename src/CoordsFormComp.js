@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 const CoordsFormComp = (props) => {
-  const [coords, setCoords] = useState({ lon: null, lat: null });
+  const [coords, setCoords] = useState({ lon: 0, lat: 0 });
 
   const setLon = (e) => {
     setCoords({

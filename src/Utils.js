@@ -16,6 +16,22 @@ const convertSceneCoordinatesToDegreesString = (pixels, viewer) => {
   return convertCartesian2DegreesString(cartesian);
 };
 
+const convertCartographic2Cartesian = (carto) => {
+  let result = null;
+
+  let cartesian;
+
+  if (carto) {
+    const carto0 = new Cartographic(carto[0], carto[1]);
+
+    cartesian = Cartographic.toCartesian(carto0);
+
+    //result = [cartesian.longitude, cartesian.latitude];
+  }
+
+  return cartesian;// result;
+};
+
 const convertCartesian2Cartographic = (cartesian) => {
   let result = null;
 
@@ -61,6 +77,31 @@ const getDummyPointsArray = () => {
   return pointsArray;
 };
 
+const naiveSearch = (pickedPoint, num = 1, dist = 1) => {
+  const lon = pickedPoint[0];
+  const lat = pickedPoint[1];
+
+  let found = [];
+
+  let i = 0;
+
+  while (found.length < num && i < pointsArray.length) {
+    const point = pointsArray[i++];
+
+    if (abs(point[0] - lon) < dist && abs(point[1] - lat))
+      found.push(point);
+  }
+
+  return found;
+};
+
+const abs = num => {
+  if (num < 0)
+    num *= -1;
+
+  return num;
+}
+
 const initDummyPointsArray = (num, roi) => {
   var arr = [];
 
@@ -75,11 +116,11 @@ const initDummyPointsArray = (num, roi) => {
     arr.push([l, t]);
   }
 
-//regionOfInterest
+  //regionOfInterest
 
 
-    //if (i % 2 === 0) arr.push([-82 + i * 0.1, 37 + i * 0.1]);
-    //else arr.push([-82 - i * 0.1, 37 - i * 0.1]);
+  //if (i % 2 === 0) arr.push([-82 + i * 0.1, 37 + i * 0.1]);
+  //else arr.push([-82 - i * 0.1, 37 - i * 0.1]);
 
   return arr;
 };
@@ -100,9 +141,11 @@ export default {
   convertSceneCoordinatesToDegreesString,
   getDummyPointsArray,
   dummySearch,
+  naiveSearch,
+  convertCartographic2Cartesian
 };
 
-class regionOfInterest{
+class regionOfInterest {
   constructor(l, t, r, b) {
     this.left = l;
     this.top = t;
