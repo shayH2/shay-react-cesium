@@ -56,17 +56,30 @@ const convertCartesian2DegreesString = (cartesian) => {
 let pointsArray;
 
 const getDummyPointsArray = () => {
-  if (!pointsArray) pointsArray = initDummyPointsArray(100);
+  if (!pointsArray) pointsArray = initDummyPointsArray(1000, new regionOfInterest(-100, 40, -80, 30));
 
   return pointsArray;
 };
 
-const initDummyPointsArray = (num) => {
+const initDummyPointsArray = (num, roi) => {
   var arr = [];
 
-  for (let i = 0; i < num; i++)
-    if (i % 2 === 0) arr.push([-82 + i * 0.1, 37 + i * 0.1]);
-    else arr.push([-82 - i * 0.1, 37 - i * 0.1]);
+  const width = roi.right - roi.left;
+  const height = roi.top - roi.bottom;
+
+  for (let i = 0; i < num; i++) {
+    const l = roi.left + Math.nextRandomNumber() * width;
+
+    const t = roi.bottom + Math.nextRandomNumber() * height;
+
+    arr.push([l, t]);
+  }
+
+//regionOfInterest
+
+
+    //if (i % 2 === 0) arr.push([-82 + i * 0.1, 37 + i * 0.1]);
+    //else arr.push([-82 - i * 0.1, 37 - i * 0.1]);
 
   return arr;
 };
@@ -87,4 +100,13 @@ export default {
   convertSceneCoordinatesToDegreesString,
   getDummyPointsArray,
   dummySearch,
+};
+
+class regionOfInterest{
+  constructor(l, t, r, b) {
+    this.left = l;
+    this.top = t;
+    this.right = r;
+    this.bottom = b;
+  }
 };

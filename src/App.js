@@ -83,12 +83,16 @@ const App = ({ title }) => {
       const strs = utils.convertCartesian2DegreesString(cartesian);
 
       //setMoving({ lon: strs[0], lat: strs[1] });
+      const validMoving = Array.isArray(strs) && strs.length === 2;
 
-      entity.position = cartesian;
-      entity.label.show = true;
-      entity.label.text =
-        `Lon: ${`   ${strs[0]}`.slice(-7)}\u00B0` +
-        `\nLat: ${`   ${strs[1]}`.slice(-7)}\u00B0`;
+      entity.label.show = validMoving;
+
+      if (validMoving) {
+        entity.position = cartesian;
+        entity.label.text =
+          `Lon: ${`   ${strs[0]}`.slice(-7)}\u00B0` +
+          `\nLat: ${`   ${strs[1]}`.slice(-7)}\u00B0`;
+      }
 
       //   //alert(movement);
     }, ScreenSpaceEventType.MOUSE_MOVE);
