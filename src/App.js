@@ -1,5 +1,9 @@
-import React, { useState, useLayoutEffect } from 'react';
+import React, { useState, useLayoutEffect, StrictMode } from 'react';
+import convert from './classes/Conversions';
+import search from './classes/SearchAlgo';
+import point from './classes/Point';
 import utils from './Utils';
+
 import {
   Ion,
   Viewer,
@@ -31,18 +35,15 @@ const App = ({ title }) => {
     }
     cesiumViewer = new Viewer('CesiumMap');
 
+    //get dummy points
     const pointsArray = utils.getDummyPointsArray();
-
-    //alert(pointsArray.length);
 
     for (let i = 0; i < pointsArray.length; i++) {
       const degs = pointsArray[i].coords;
 
-      const cartesianPoint = Cartesian3.fromDegrees(
-        degs.x,
-        degs.y
-      );
+      const cartesianPoint = Cartesian3.fromDegrees(degs.x, degs.y);
 
+      //add points to viewer
       utils.myEllipse = cesiumViewer.entities.add({
         position: cartesianPoint,
         ellipse: {
@@ -53,6 +54,7 @@ const App = ({ title }) => {
       });
     }
 
+    //label of moving
     const entity = cesiumViewer.entities.add({
       label: {
         show: false,
@@ -64,6 +66,7 @@ const App = ({ title }) => {
       },
     });
 
+    //scene -render screen
     const scene = cesiumViewer.scene;
 
     console.log(`scene = ${scene}`);
@@ -74,13 +77,14 @@ const App = ({ title }) => {
 
     let myEllipse;
 
+    //mouse move
     handler.setInputAction((movement) => {
-      const cartesian = utils.convertSceneCoordinatesToCartesian(
+      const cartesian = convert.convertSceneCoordinatesToCartesian(
         movement.endPosition,
         cesiumViewer
       );
 
-      const strs = utils.convertCartesian2DegreesString(cartesian);
+      const strs = convert.convertCartesian2DegreesString(cartesian);
 
       //setMoving({ lon: strs[0], lat: strs[1] });
       const validMoving = Array.isArray(strs) && strs.length === 2;
@@ -97,6 +101,7 @@ const App = ({ title }) => {
       //   //alert(movement);
     }, ScreenSpaceEventType.MOUSE_MOVE);
 
+    //left down
     handler.setInputAction((pickObject) => {
       const cartesianPoint = cesiumViewer.camera.pickEllipsoid(
         pickObject.position,
@@ -108,7 +113,7 @@ const App = ({ title }) => {
       //new Cartesian3(0.0, 0.0, 4200000.0)
       //);
 
-      const strs = utils.convertSceneCoordinatesToDegreesString(
+      const strs = convert.convertSceneCoordinatesToDegreesString(
         pickObject.position,
         cesiumViewer
       );
@@ -127,11 +132,11 @@ const App = ({ title }) => {
 
       var ellipse = entity.ellipse; // For upcoming examples
 
-      const degs = utils.convertCartesian2Degrees(cartesianPoint);
+      const degs = convert.convertCartesian2Degrees(cartesianPoint);
 
-      const found = []
+      const found = [];
 
-      utils.naiveSearch(found, null, degs);
+      search.naiveSearch(pointsArray, found, null, degs);
 
       if (Array.isArray(found) && found.length > 0) {
         for (let i = 0; i < found.length; i++) {
@@ -142,7 +147,7 @@ const App = ({ title }) => {
             point0.y
           );
 
-          myEllipse && cesiumViewer.entities.remove(myEllipse);
+          //myEllipse && cesiumViewer.entities.remove(myEllipse);
 
           const myEllipse0 = cesiumViewer.entities.add({
             position: cartesianPoint,
@@ -159,6 +164,7 @@ const App = ({ title }) => {
     }, ScreenSpaceEventType.LEFT_DOWN);
   }, []);
 
+  //form callbak
   const setCoordsByForm = (coords) => {
     var cartesianPoint = Cartesian3.fromDegrees(
       parseFloat(coords.lon),

@@ -1,108 +1,20 @@
+'use strict';
+
 import { Cartographic, LabelStyle, Math } from 'cesium';
 
-const convertSceneCoordinatesToCartesian = (pixels, viewer) => viewer.camera.pickEllipsoid(
-  pixels,
-  viewer.scene.globe.ellipsoid
-);
-
-const convertSceneCoordinatesToDegreesString = (pixels, viewer) => {
-  const cartesian = convertSceneCoordinatesToCartesian(
-    pixels,
-    viewer
-  );
-
-  return convertCartesian2DegreesString(cartesian);
-};
-
-const convertCartographic2Cartesian = carto => {
-  let result = null;
-
-  let cartesian;
-
-  if (carto) {
-    const carto0 = new Cartographic(carto[0], carto[1]);
-
-    cartesian = Cartographic.toCartesian(carto0);
-
-    //result = [cartesian.longitude, cartesian.latitude];
-  }
-
-  return cartesian;// result;
-};
-
-const convertCartesian2Degrees = (cartesian) => {
-  let result = null;
-
-  if (cartesian) {
-    const cartographic = Cartographic.fromCartesian(cartesian);
-
-    if (cartographic)
-      result = new point(Math.toDegrees(cartographic.longitude),
-        Math.toDegrees(cartographic.latitude), cartographic.z);
-  }
-
-  return result;
-};
-
-const convertCartesian2DegreesString = (cartesian) => {
-  let result = null;
-
-  const degrees = convertCartesian2Degrees(cartesian);
-
-  if (degrees)
-    result = [degrees.x.toFixed(2), degrees.y.toFixed(2)];
-
-  return result;
-};
+import convert from './classes/Conversions';
 
 let pointsArray;
 
 const getDummyPointsArray = () => {
-  if (!pointsArray) pointsArray = initDummyPointsArray(1000, new regionOfInterest(-100, 40, -80, 30));
+  if (!pointsArray)
+    pointsArray = initDummyPointsArray(
+      1000,
+      new regionOfInterest(-100, 40, -80, 30)
+    );
 
   return pointsArray;
 };
-
-const naiveSearch = (found, points, pickedPoint, num = 10, dist = 0.5, delta = 0.1) => {
-  if (!points) {
-    points = new Map();
-
-    pointsArray.forEach(point => points.set(point.id, point.coords));
-  }
-
-  const lon = pickedPoint.x;
-  const lat = pickedPoint.y;
-
-  let index = 0;
-
-  let keys = [...points.keys()];
-
-  const foundLength = found.length; 
-
-  while (found.length < num && index < points.size) {
-    const key = keys[index++];
-
-    const point0 = points.get(key);
-
-    if (abs(point0.x - lon) < dist && abs(point0.y - lat) < dist) {
-      found.push(point0);
-
-      points.delete(key);
-      //map1.delete('b');
-      //points
-    }
-  }
-
-  //if (found.length > foundLength && found.length < num)
-    //naiveSearch(found, points, pickedPoint, num);
-};
-
-const abs = num => {
-  if (num < 0)
-    num *= -1;
-
-  return num;
-}
 
 const initDummyPointsArray = (num, roi) => {
   var arr = [];
@@ -120,15 +32,10 @@ const initDummyPointsArray = (num, roi) => {
 
   //regionOfInterest
 
-
   //if (i % 2 === 0) arr.push([-82 + i * 0.1, 37 + i * 0.1]);
   //else arr.push([-82 - i * 0.1, 37 - i * 0.1]);
 
   return arr;
-};
-
-const dummySearch = (cartesian) => {
-  if (!pointsArray) pointsArray = initDummyPointsArray();
 };
 
 // entity.position = cartesian;
@@ -136,15 +43,12 @@ const dummySearch = (cartesian) => {
 // entity.text = text;
 
 export default {
-  convertCartesian2Degrees,
-  convertCartesian2DegreesString,
-  convertSceneCoordinatesToCartesian,
-  convertSceneCoordinatesToDegreesString,
   getDummyPointsArray,
-  dummySearch,
-  naiveSearch,
-  convertCartographic2Cartesian
 };
+
+const CoordsImage = 1;
+const CoordsCartographoic = 2;
+const CoordsCartesian = 3;
 
 class regionOfInterest {
   constructor(l, t, r, b) {
@@ -153,7 +57,7 @@ class regionOfInterest {
     this.right = r;
     this.bottom = b;
   }
-};
+}
 
 class point {
   constructor(x, y, z, coordsType) {
@@ -178,8 +82,4 @@ class point {
   set y(val) {
     this.coordY = val;
   }
-};
-
-const CoordsImage = 1;
-const CoordsCartographoic = 2;
-const CoordsCartesian = 3;
+}
