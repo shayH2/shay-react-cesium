@@ -1,11 +1,9 @@
 import { Cartographic, Math } from 'cesium';
 
-const convertSceneCoordinatesToCartesian = (pixels, viewer) => {
-  return viewer.camera.pickEllipsoid(
-    pixels,
-    viewer.scene.globe.ellipsoid
-  );
-};
+const convertSceneCoordinatesToCartesian = (pixels, viewer) => viewer.camera.pickEllipsoid(
+  pixels,
+  viewer.scene.globe.ellipsoid
+);
 
 const convertSceneCoordinatesToDegreesString = (pixels, viewer) => {
   const cartesian = convertSceneCoordinatesToCartesian(
@@ -16,7 +14,7 @@ const convertSceneCoordinatesToDegreesString = (pixels, viewer) => {
   return convertCartesian2DegreesString(cartesian);
 };
 
-const convertCartographic2Cartesian = (carto) => {
+const convertCartographic2Cartesian = carto => {
   let result = null;
 
   let cartesian;
@@ -32,28 +30,16 @@ const convertCartographic2Cartesian = (carto) => {
   return cartesian;// result;
 };
 
-const convertCartesian2Cartographic = (cartesian) => {
+const convertCartesian2Degrees = (cartesian) => {
   let result = null;
 
   if (cartesian) {
     const cartographic = Cartographic.fromCartesian(cartesian);
 
-    result = [cartographic.longitude, cartographic.latitude];
+    if (cartographic)
+      result = new point(Math.toDegrees(cartographic.longitude),
+        Math.toDegrees(cartographic.latitude), cartographic.z);
   }
-
-  return result;
-};
-
-const convertCartesian2Degrees = (cartesian) => {
-  let result = null;
-
-  const cartographic = convertCartesian2Cartographic(cartesian);
-
-  if (cartographic)
-    result = [
-      Math.toDegrees(cartographic[0]),
-      Math.toDegrees(cartographic[1]),
-    ];
 
   return result;
 };
@@ -64,7 +50,7 @@ const convertCartesian2DegreesString = (cartesian) => {
   const degrees = convertCartesian2Degrees(cartesian);
 
   if (degrees)
-    result = [degrees[0].toFixed(2), degrees[1].toFixed(2)];
+    result = [degrees.x.toFixed(2), degrees.y.toFixed(2)];
 
   return result;
 };
@@ -134,7 +120,6 @@ const dummySearch = (cartesian) => {
 // entity.text = text;
 
 export default {
-  convertCartesian2Cartographic,
   convertCartesian2Degrees,
   convertCartesian2DegreesString,
   convertSceneCoordinatesToCartesian,
@@ -153,3 +138,16 @@ class regionOfInterest {
     this.bottom = b;
   }
 };
+
+class point {
+  constructor(x, y, z, coordsType) {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+    this.coordsType = coordsType;
+  }
+};
+
+const CoordsImage = 1;
+const CoordsCartographoic = 2;
+const CoordsCartesian = 3;
