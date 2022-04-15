@@ -63,7 +63,7 @@ const getDummyPointsArray = () => {
   return pointsArray;
 };
 
-const naiveSearch = (pickedPoint, num = 1, dist = 0.03) => {
+const naiveSearch = (pickedPoint, num = 1, dist = 0.5) => {
   const lon = pickedPoint.x;
   const lat = pickedPoint.y;
 
@@ -74,7 +74,7 @@ const naiveSearch = (pickedPoint, num = 1, dist = 0.03) => {
   while (found.length < num && i < pointsArray.length) {
     const point = pointsArray[i++];
 
-    if (abs(point[0] - lon) < dist && abs(point[1] - lat))
+    if (abs(point[0] - lon) < dist && abs(point[1] - lat) < dist)
       found.push(point);
   }
 
