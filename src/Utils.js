@@ -1,4 +1,4 @@
-import { Cartographic, Math } from 'cesium';
+import { Cartographic, LabelStyle, Math } from 'cesium';
 
 const convertSceneCoordinatesToCartesian = (pixels, viewer) => viewer.camera.pickEllipsoid(
   pixels,
@@ -63,19 +63,37 @@ const getDummyPointsArray = () => {
   return pointsArray;
 };
 
-const naiveSearch = (pickedPoint, num = 1, dist = 0.5) => {
+const naiveSearch = (points, pickedPoint, num = 10, dist = 0.5, delta = 0.1) => {
+  if (!points) {
+    points = new Map();
+
+    pointsArray.forEach(point => points.set(point.id, point.coords));
+  }
+
   const lon = pickedPoint.x;
   const lat = pickedPoint.y;
 
   let found = [];
 
-  let i = 0;
+  let index = 0;
 
-  while (found.length < num && i < pointsArray.length) {
-    const point = pointsArray[i++];
+  let keys = [...points.keys()];
 
-    if (abs(point[0] - lon) < dist && abs(point[1] - lat) < dist)
+  while (found.length < num && index < points.size) {
+    const key = keys[index++];
+
+    const point = points.get(key);
+
+    if (abs(point.x - lon) < dist && abs(point.y - lat) < dist) {
       found.push(point);
+
+      points.delete(key);
+      //map1.delete('b');
+      //points
+
+      if (found.length < num)
+        naiveSearch(points, pickedPoint, num);
+    }
   }
 
   return found;
@@ -99,7 +117,7 @@ const initDummyPointsArray = (num, roi) => {
 
     const t = roi.bottom + Math.nextRandomNumber() * height;
 
-    arr.push([l, t]);
+    arr.push({ id: i, coords: new point(l, t) });
   }
 
   //regionOfInterest
@@ -141,10 +159,26 @@ class regionOfInterest {
 
 class point {
   constructor(x, y, z, coordsType) {
-    this.x = x;
-    this.y = y;
+    this.coordX = x;
+    this.coordY = y;
     this.z = z;
     this.coordsType = coordsType;
+  }
+
+  get x() {
+    return this.coordX;
+  }
+
+  set x(val) {
+    this.coordX = val;
+  }
+
+  get y() {
+    return this.coordY;
+  }
+
+  set y(val) {
+    this.coordY = val;
   }
 };
 

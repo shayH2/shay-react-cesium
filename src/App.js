@@ -36,11 +36,11 @@ const App = ({ title }) => {
     //alert(pointsArray.length);
 
     for (let i = 0; i < pointsArray.length; i++) {
-      const point = pointsArray[i];
+      const degs = pointsArray[i].coords;
 
       const cartesianPoint = Cartesian3.fromDegrees(
-        point[0],
-        point[1]
+        degs.x,
+        degs.y
       );
 
       utils.myEllipse = cesiumViewer.entities.add({
@@ -129,7 +129,7 @@ const App = ({ title }) => {
 
       const degs = utils.convertCartesian2Degrees(cartesianPoint);
 
-      const found = utils.naiveSearch(degs);
+      const found = utils.naiveSearch(null, degs);
 
       if (Array.isArray(found) && found.length > 0) {
         for (let i = 0; i < found.length; i++) {
