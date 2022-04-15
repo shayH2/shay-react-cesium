@@ -63,7 +63,7 @@ const getDummyPointsArray = () => {
   return pointsArray;
 };
 
-const naiveSearch = (points, pickedPoint, num = 10, dist = 0.5, delta = 0.1) => {
+const naiveSearch = (found, points, pickedPoint, num = 10, dist = 0.5, delta = 0.1) => {
   if (!points) {
     points = new Map();
 
@@ -73,30 +73,28 @@ const naiveSearch = (points, pickedPoint, num = 10, dist = 0.5, delta = 0.1) => 
   const lon = pickedPoint.x;
   const lat = pickedPoint.y;
 
-  let found = [];
-
   let index = 0;
 
   let keys = [...points.keys()];
 
+  const foundLength = found.length; 
+
   while (found.length < num && index < points.size) {
     const key = keys[index++];
 
-    const point = points.get(key);
+    const point0 = points.get(key);
 
-    if (abs(point.x - lon) < dist && abs(point.y - lat) < dist) {
-      found.push(point);
+    if (abs(point0.x - lon) < dist && abs(point0.y - lat) < dist) {
+      found.push(point0);
 
       points.delete(key);
       //map1.delete('b');
       //points
-
-      if (found.length < num)
-        naiveSearch(points, pickedPoint, num);
     }
   }
 
-  return found;
+  //if (found.length > foundLength && found.length < num)
+    //naiveSearch(found, points, pickedPoint, num);
 };
 
 const abs = num => {
