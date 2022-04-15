@@ -135,14 +135,19 @@ const App = ({ title }) => {
         for (let i = 0; i < found.length; i++) {
           const point0 = found[i];
 
-          const cartesian = utils.convertCartographic2Cartesian(point0);
+          const cartesianPoint = Cartesian3.fromDegrees(
+            point0[0],
+            point0[1]
+          );
+
+          myEllipse && cesiumViewer.entities.remove(myEllipse);
 
           const myEllipse0 = cesiumViewer.entities.add({
-            position: cartesian,
+            position: cartesianPoint,
             ellipse: {
-              semiMinorAxis: 250000.0,
-              semiMajorAxis: 400000.0,
-              material: Color.YELLOWGREEN.withAlpha(0.5),
+              semiMinorAxis: 25000.0,
+              semiMajorAxis: 40000.0,
+              material: Color.BLACK.withAlpha(0.5),
             },
           });
         }

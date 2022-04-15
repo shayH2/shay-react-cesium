@@ -63,9 +63,9 @@ const getDummyPointsArray = () => {
   return pointsArray;
 };
 
-const naiveSearch = (pickedPoint, num = 1, dist = 1) => {
-  const lon = pickedPoint[0];
-  const lat = pickedPoint[1];
+const naiveSearch = (pickedPoint, num = 1, dist = 0.03) => {
+  const lon = pickedPoint.x;
+  const lat = pickedPoint.y;
 
   let found = [];
 
