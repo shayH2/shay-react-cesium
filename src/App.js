@@ -136,7 +136,7 @@ const App = ({ title }) => {
 
       const found = new Map();
 
-      search.naiveSearch(pointsArray, found, degs);
+      search.naiveSearch(pointsArray, found, degs, 100, 0.01, 0.01);
 
       if (found.size > 0) {
         let arr = Array.from(found);
@@ -151,7 +151,7 @@ const App = ({ title }) => {
             point0.y
           );
 
-          //myEllipse && cesiumViewer.entities.remove(myEllipse);
+          myEllipse && cesiumViewer.entities.remove(myEllipse);
 
           const myEllipse0 = cesiumViewer.entities.add({
             position: cartesianPoint,

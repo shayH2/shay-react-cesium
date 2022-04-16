@@ -20,12 +20,12 @@ const naiveSearch = (
 
     const point0 = pointsArray[index++];
 
-    if (!found.has(currentIndex) && abs(point0.x - lon) < dist && abs(point0.y - lat) < dist) 
+    if (!found.has(currentIndex) && abs(point0.x - lon) < dist && abs(point0.y - lat) < dist)
       found.set(currentIndex, point0);
   }
 
-  //if (found.length > foundLength && found.length < num)
-  //naiveSearch(found, points, pickedPoint, num);
+  if (found.size < nearestDevices)
+    naiveSearch(pointsArray, found, pickedPoint, nearestDevices, dist + delta);
 };
 
 const abs = (num) => {
