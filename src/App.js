@@ -39,7 +39,7 @@ const App = ({ title }) => {
     const pointsArray = utils.getDummyPointsArray();
 
     for (let i = 0; i < pointsArray.length; i++) {
-      const degs = pointsArray[i].coords;
+      const degs = pointsArray[i];
 
       const cartesianPoint = Cartesian3.fromDegrees(degs.x, degs.y);
 
@@ -134,13 +134,17 @@ const App = ({ title }) => {
 
       const degs = convert.convertCartesian2Degrees(cartesianPoint);
 
-      const found = [];
+      const found = new Map();
 
-      search.naiveSearch(pointsArray, found, null, degs);
+      search.naiveSearch(pointsArray, found, degs);
 
-      if (Array.isArray(found) && found.length > 0) {
-        for (let i = 0; i < found.length; i++) {
-          const point0 = found[i];
+      if (found.size > 0) {
+        let arr = Array.from(found);
+
+        arr = arr.map(arr0 => arr0[1]);
+
+        for (let i = 0; i < arr.length; i++) {
+          const point0 = arr[i];
 
           const cartesianPoint = Cartesian3.fromDegrees(
             point0.x,

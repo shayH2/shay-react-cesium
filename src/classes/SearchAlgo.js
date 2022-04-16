@@ -5,41 +5,23 @@ import { utils } from './Conversions';
 const naiveSearch = (
   pointsArray,
   found,
-  points,
   pickedPoint,
   nearestDevices = 10,
   dist = 0.5,
   delta = 0.1
 ) => {
-  if (!points) {
-    points = new Map();
-
-    pointsArray.forEach((point) =>
-      points.set(point.id, point.coords)
-    );
-  }
-
   const lon = pickedPoint.x;
   const lat = pickedPoint.y;
 
   let index = 0;
 
-  let keys = [...points.keys()];
+  while (found.size < nearestDevices && index < pointsArray.length) {
+    const currentIndex = index;
 
-  const foundLength = found.length;
+    const point0 = pointsArray[index++];
 
-  while (found.length < nearestDevices && index < points.size) {
-    const key = keys[index++];
-
-    const point0 = points.get(key);
-
-    if (abs(point0.x - lon) < dist && abs(point0.y - lat) < dist) {
-      found.push(point0);
-
-      points.delete(key);
-      //map1.delete('b');
-      //points
-    }
+    if (!found.has(currentIndex) && abs(point0.x - lon) < dist && abs(point0.y - lat) < dist) 
+      found.set(currentIndex, point0);
   }
 
   //if (found.length > foundLength && found.length < num)

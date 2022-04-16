@@ -27,7 +27,7 @@ const initDummyPointsArray = (num, roi) => {
 
     const t = roi.bottom + Math.nextRandomNumber() * height;
 
-    arr.push({ id: i, coords: new point(l, t) });
+    arr.push(new point(l, t));
   }
 
   //regionOfInterest
