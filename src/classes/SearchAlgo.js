@@ -8,23 +8,33 @@ const naiveSearch = (
   pickedPoint,
   nearestDevices = 10,
   dist = 0.5,
-  delta = 0.1
+  delta = 0.1,
+  max = 3
 ) => {
   const lon = pickedPoint.x;
   const lat = pickedPoint.y;
 
   let index = 0;
 
+  const dist2 = dist * dist;
+
   while (found.size < nearestDevices && index < pointsArray.length) {
     const currentIndex = index;
 
     const point0 = pointsArray[index++];
 
-    if (!found.has(currentIndex) && abs(point0.x - lon) < dist && abs(point0.y - lat) < dist)
-      found.set(currentIndex, point0);
+    if (!found.has(currentIndex)) {
+      const dx = point0.x - lon;
+      const dy = point0.y - lat;
+
+      const c2 = dx * dx + dy * dy;
+
+      if (c2 < dist2)
+        found.set(currentIndex, point0);
+    }
   }
 
-  if (found.size < nearestDevices)
+  if (found.size < nearestDevices && dist < max)
     naiveSearch(pointsArray, found, pickedPoint, nearestDevices, dist + delta);
 };
 

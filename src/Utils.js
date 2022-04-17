@@ -9,8 +9,8 @@ let pointsArray;
 const getDummyPointsArray = () => {
   if (!pointsArray)
     pointsArray = initDummyPointsArray(
-      1000,
-      new regionOfInterest(-100, 40, -80, 30)
+      2850,
+      new regionOfInterest(-120, 60, -60, 10)
     );
 
   return pointsArray;
