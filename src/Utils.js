@@ -17,17 +17,22 @@ const getDummyPointsArray = () => {
 };
 
 const initDummyPointsArray = (num, roi) => {
-  var arr = [];
+  const arr = Array(num).fill(null);
 
   const width = roi.right - roi.left;
   const height = roi.top - roi.bottom;
+
+  const currentIndex = num / 2;
 
   for (let i = 0; i < num; i++) {
     const l = roi.left + Math.nextRandomNumber() * width;
 
     const t = roi.bottom + Math.nextRandomNumber() * height;
 
-    arr.push(new point(l, t));
+    //arr.push(new point(l, t));
+    const currentpoint = arr[currentIndex];
+    
+    arr[i] = new point(l, t);
   }
 
   //regionOfInterest
