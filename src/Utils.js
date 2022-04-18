@@ -9,7 +9,7 @@ let pointsArray;
 const getDummyPointsArray = () => {
     if (!pointsArray)
         pointsArray = initDummyPointsArray(
-            250,
+            5,
             new regionOfInterest(-120, 60, -60, 10)
         );
 
@@ -44,28 +44,40 @@ const initDummyPointsArray = (num, roi) => {
         let currentPoint = arr[index];
 
         if (currentPoint) {
-            while (newPoint.x <= currentPoint.x && index >= begin) {
-                currentPoint = arr[index];
+            let found = -1;
 
-                index--;
-            }
+            if (newPoint.x < currentPoint.x) {
+                let k = index - 1;
 
-            if (!currentPoint)
-                alert(" is null, after search up");
+                while (found < 0 && k >= begin) {
+                    currentPoint = arr[k];
 
-            if (index === middle)
-                while (newPoint.x >= currentPoint.x && index <= end) {
-                    currentPoint = arr[index];
+                    if (newPoint.x > currentPoint.x)
+                        found = k;
 
-                    index++;
+                    k--;
                 }
 
-            if (!currentPoint)
-                alert(" is null, after search down");
+                if (found < 0)
+                    found = begin;
+            } else {
+                let k = index + 1;
 
-            index = min(index, arr.length - 1);
+                while (found < 0 && k <= end) {
+                    currentPoint = arr[k];
 
-            index = max(index, 0);
+                    if (newPoint.x < currentPoint.x)
+                        found = k;
+
+                    k++;
+                }
+
+                if (found < 0)
+                    found = end;
+            }
+
+            if (found >= 0)
+                index = found;
 
             if (index > end) {
                 //alert(`end  ${end}`);
