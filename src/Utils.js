@@ -7,126 +7,146 @@ import convert from './classes/Conversions';
 let pointsArray;
 
 const getDummyPointsArray = () => {
-    if (!pointsArray)
-        pointsArray = initDummyPointsArray(
-            5,
-            new regionOfInterest(-120, 60, -60, 10)
-        );
+  if (!pointsArray)
+    pointsArray = initDummyPointsArray(
+      2850,
+      new regionOfInterest(-120, 60, -60, 10)
+    );
 
-    return pointsArray;
+  return pointsArray;
 };
 
 const initDummyPointsArray = (num, roi) => {
-    const arr = Array(num).fill(null);
+  const width = roi.right - roi.left;
+  const height = roi.top - roi.bottom;
 
-    const width = roi.right - roi.left;
-    const height = roi.top - roi.bottom;
+  const arr = Array(num).fill(null);
 
-    let num0 = num;
+  const middle = floorDivision(num, 2);
 
-    if ((num0 % 2) === 1)
-        num0 -= 1;
+  let begin, end;
 
-    const middle = num0 / 2;
+  begin = end = middle;
 
-    let begin = middle;
-    let end = begin;
+  for (let i = 0; i < num; i++) {
+    const x = roi.left + Math.nextRandomNumber() * width;
 
-    for (let i = 0; i < num; i++) {
-        const l = roi.left + Math.nextRandomNumber() * width;
+    const y = roi.bottom + Math.nextRandomNumber() * height;
 
-        const t = roi.bottom + Math.nextRandomNumber() * height;
+    const newPoint = new point(x, y);
 
-        const newPoint = new point(l, t);
+    let index = middle;
 
-        let index = middle;
+    let currentPoint = arr[index];
 
-        let currentPoint = arr[index];
+    if (!currentPoint) {
+      arr[index] = newPoint;
+    } else {
+      while (index <= end && newPoint.x >= currentPoint.x) {
+        index++;
 
-        if (currentPoint) {
-            let found = -1;
+        if (index <= end)
+          currentPoint = arr[index];
+      }
 
-            if (newPoint.x < currentPoint.x) {
-                let k = index - 1;
+      if (index === middle)
+        while (index >= begin && newPoint.x <= currentPoint.x) {
+          index--;
 
-                while (found < 0 && k >= begin) {
-                    currentPoint = arr[k];
-
-                    if (newPoint.x > currentPoint.x)
-                        found = k;
-
-                    k--;
-                }
-
-                if (found < 0)
-                    found = begin;
-            } else {
-                let k = index + 1;
-
-                while (found < 0 && k <= end) {
-                    currentPoint = arr[k];
-
-                    if (newPoint.x < currentPoint.x)
-                        found = k;
-
-                    k++;
-                }
-
-                if (found < 0)
-                    found = end;
-            }
-
-            if (found >= 0)
-                index = found;
-
-            if (index > end) {
-                //alert(`end  ${end}`);
-                arr[index] = newPoint;
-
-                end = index;
-                //alert(`end  ${end}`);
-            } else if (index < begin) {
-                //alert(`begin  ${begin}`);
-                arr[index] = newPoint;
-
-                begin = index;
-                //alert(`begin  ${begin}`);
-            } else {
-                const distFromBegin = index - begin;
-                const distToEnd = end - index;
-
-                //alert(`index = ${index}, begin = ${begin}, end = ${end}`);
-
-                let j;
-
-                if (distFromBegin > distToEnd) {
-                    if (end < arr.length - 1)
-                        end++;
-
-                    for (let j = end; j > index; j--)
-                        arr[j] = arr[j - 1];
-                } else {
-                    if (begin > 0)
-                        begin--;
-
-                    for (let j = begin; j < index; j++)
-                        arr[j] = arr[j + 1];
-                }
-
-                arr[index] = newPoint;
-            }
-        } else {
-            arr[index] = newPoint;
+          if (index >= begin)
+            currentPoint = arr[index];
         }
+
+      index = min(arr.length - 1, index);
+
+      index = max(0, index);
+
+      if (index > end) {
+        arr[index] = newPoint;
+
+        end = index;
+      } else if (index < begin) {
+        arr[index] = newPoint;
+
+        begin = index;
+      } else {
+        const distFromBegin = index - begin;
+        const distToEnd = end - index;
+
+        //alert(`begin = ${begin}, end = ${end}, index = ${index}, distFromBegin = ${distFromBegin}, distToEnd = ${distToEnd}`);
+
+        let newIndex = index;
+
+        if ((distFromBegin < distToEnd || end >= (arr.length - 1)) && begin > 0) {
+          begin--;
+
+          if (arr[index].x > newPoint.x)
+            newIndex--;
+
+          for (let j = begin; j < newIndex; j++)
+            arr[j] = arr[j + 1];
+        } else {
+          end++;
+
+          if (arr[index].x < newPoint.x)
+            newIndex++;
+
+          for (let j = end; j > newIndex; j--)
+            arr[j] = arr[j - 1];
+        }
+
+        arr[newIndex] = newPoint;
+      }
+
+      //alert(`begin = ${begin}, end= ${end}`);
     }
+  }
 
-    //regionOfInterest
-
-    //if (i % 2 === 0) arr.push([-82 + i * 0.1, 37 + i * 0.1]);
-    //else arr.push([-82 - i * 0.1, 37 - i * 0.1]);
-
-    return arr;
+  return arr;
 };
+
+
+
+const kuku = () => {
+  
+
+  let max = null;
+
+  let i = 0;
+
+  let errorIndex = 0;
+
+  while (errorIndex < 1 && i < arr.length) {
+    let x = arr[i].x;
+
+    console.log(`arr[${i}]: ${x}`);
+
+    if (max === null)
+      max = x;
+
+    if (x < max)
+      errorIndex = i;
+
+    i++;
+  }
+
+  if (errorIndex > 0)
+    alert(`error index = ${errorIndex}`);
+
+}
+
+
+
+const floorDivision = (num, denom) => {
+  let remainder = num % denom;
+
+  while (remainder > 0) {
+    remainder--;
+    num--;
+  }
+
+  return num / denom;
+}
 
 const min = (a, b) => a < b ? a : b;
 
@@ -137,7 +157,7 @@ const max = (a, b) => a > b ? a : b;
 // entity.text = text;
 
 export default {
-    getDummyPointsArray,
+  getDummyPointsArray,
 };
 
 const CoordsImage = 1;
@@ -145,35 +165,35 @@ const CoordsCartographoic = 2;
 const CoordsCartesian = 3;
 
 class regionOfInterest {
-    constructor(l, t, r, b) {
-        this.left = l;
-        this.top = t;
-        this.right = r;
-        this.bottom = b;
-    }
+  constructor(l, t, r, b) {
+    this.left = l;
+    this.top = t;
+    this.right = r;
+    this.bottom = b;
+  }
 }
 
 class point {
-    constructor(x, y, z, coordsType) {
-        this.coordX = x;
-        this.coordY = y;
-        this.z = z;
-        this.coordsType = coordsType;
-    }
+  constructor(x, y, z, coordsType) {
+    this.coordX = x;
+    this.coordY = y;
+    this.z = z;
+    this.coordsType = coordsType;
+  }
 
-    get x() {
-        return this.coordX;
-    }
+  get x() {
+    return this.coordX;
+  }
 
-    set x(val) {
-        this.coordX = val;
-    }
+  set x(val) {
+    this.coordX = val;
+  }
 
-    get y() {
-        return this.coordY;
-    }
+  get y() {
+    return this.coordY;
+  }
 
-    set y(val) {
-        this.coordY = val;
-    }
+  set y(val) {
+    this.coordY = val;
+  }
 }

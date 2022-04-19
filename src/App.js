@@ -136,7 +136,7 @@ const App = ({ title }) => {
 
       const found = new Map();
 
-      search.naiveSearch(pointsArray, found, degs, 100, 0.01, 0.01);
+      search.naiveSearch(pointsArray, found, degs, 100, 1, 1);//0.01);
 
       if (found.size > 0) {
         let arr = Array.from(found);

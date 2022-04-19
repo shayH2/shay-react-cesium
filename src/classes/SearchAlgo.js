@@ -34,8 +34,8 @@ const naiveSearch = (
     }
   }
 
-  if (found.size < nearestDevices && dist < max)
-    naiveSearch(pointsArray, found, pickedPoint, nearestDevices, dist + delta);
+  if (delta > 0 && found.size < nearestDevices && dist < max)
+    naiveSearch(pointsArray, found, pickedPoint, nearestDevices, dist + delta, delta);
 };
 
 const abs = (num) => {
