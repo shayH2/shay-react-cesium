@@ -1,6 +1,6 @@
 'use strict';
 
-class point {
+export default class point {
   constructor(x, y, z, coordsType) {
     this.coordX = x;
     this.coordY = y;

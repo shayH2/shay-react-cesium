@@ -2,6 +2,10 @@
 
 import { utils } from './Conversions';
 
+const binarySearch = (pointsArray, pickedPoint, begin, end) => {
+  
+}
+
 const naiveSearch = (
   pointsArray,
   found,

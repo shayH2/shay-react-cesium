@@ -3,14 +3,15 @@
 import { Cartographic, LabelStyle, Math } from 'cesium';
 
 import convert from './classes/Conversions';
+import point from './classes/Point';
 
 let pointsArray;
 
-const getDummyPointsArray = () => {
+const getDummyPointsArray = (num, roi) => {
   if (!pointsArray)
     pointsArray = initDummyPointsArray(
-      2850,
-      new regionOfInterest(-120, 60, -60, 10)
+      num,
+      roi
     );
 
   return pointsArray;
@@ -19,6 +20,17 @@ const getDummyPointsArray = () => {
 const initDummyPointsArray = (num, roi) => {
   const width = roi.right - roi.left;
   const height = roi.top - roi.bottom;
+
+  const diameter = min(height, width);
+  const radius = diameter / 2;
+
+  const r2 = radius * radius;
+
+  const centerX = roi.left + width / 2;
+  const centerY = roi.bottom + height / 2;
+
+  const left = roi.left + width / 2 - radius;
+  const bottom = roi.bottom + height / 2 - radius;
 
   const arr = Array(num).fill(null);
 
@@ -33,7 +45,18 @@ const initDummyPointsArray = (num, roi) => {
 
     const y = roi.bottom + Math.nextRandomNumber() * height;
 
-    const newPoint = new point(x, y);
+    let x0 = Math.nextRandomNumber() * diameter;
+
+    let x1 = x0 / 2;
+
+    let y0 = Math.cbrt(r2 - x1 * x1) * 2;
+
+    y0 = Math.nextRandomNumber() * y0;
+
+    x0 += left;
+    y0 += bottom;
+
+    const newPoint = new point(x0, y0);
 
     let index = middle;
 
@@ -108,7 +131,7 @@ const initDummyPointsArray = (num, roi) => {
 
 
 const kuku = () => {
-  
+
 
   let max = null;
 
@@ -163,37 +186,3 @@ export default {
 const CoordsImage = 1;
 const CoordsCartographoic = 2;
 const CoordsCartesian = 3;
-
-class regionOfInterest {
-  constructor(l, t, r, b) {
-    this.left = l;
-    this.top = t;
-    this.right = r;
-    this.bottom = b;
-  }
-}
-
-class point {
-  constructor(x, y, z, coordsType) {
-    this.coordX = x;
-    this.coordY = y;
-    this.z = z;
-    this.coordsType = coordsType;
-  }
-
-  get x() {
-    return this.coordX;
-  }
-
-  set x(val) {
-    this.coordX = val;
-  }
-
-  get y() {
-    return this.coordY;
-  }
-
-  set y(val) {
-    this.coordY = val;
-  }
-}
