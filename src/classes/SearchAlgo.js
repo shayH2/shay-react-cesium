@@ -2,16 +2,14 @@
 
 import { utils } from './Conversions';
 
-const binarySearch = (pointsArray, pickedPoint, begin, end) => {
-  
-}
+const binarySearch = (pointsArray, pickedPoint, begin, end) => {};
 
 const naiveSearch = (
   pointsArray,
   found,
   pickedPoint,
   nearestDevices = 10,
-  dist = 0.5,
+  dist = 0.1,
   delta = 0.1,
   max = 3
 ) => {
@@ -33,13 +31,19 @@ const naiveSearch = (
 
       const c2 = dx * dx + dy * dy;
 
-      if (c2 < dist2)
-        found.set(currentIndex, point0);
+      if (c2 < dist2) found.set(currentIndex, point0);
     }
   }
 
   if (delta > 0 && found.size < nearestDevices && dist < max)
-    naiveSearch(pointsArray, found, pickedPoint, nearestDevices, dist + delta, delta);
+    naiveSearch(
+      pointsArray,
+      found,
+      pickedPoint,
+      nearestDevices,
+      dist + delta,
+      delta
+    );
 };
 
 const abs = (num) => {

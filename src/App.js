@@ -36,28 +36,33 @@ const App = ({ title }) => {
     }
     cesiumViewer = new Viewer('CesiumMap');
 
-    const num = 2850;
+    const num = 50;
 
-    const roi = new regionOfInterest(-120, 60, -60, 10);
+    const roi = new regionOfInterest(-100, 40, -80, 20);
 
     const roiEntity = cesiumViewer.entities.add({
       polygon: {
         hierarchy: Cartesian3.fromDegreesArray([
-          roi.left, roi.top,
-          roi.left, roi.bottom,
-          roi.right, roi.bottom,
-          roi.right, roi.top]),
+          roi.left,
+          roi.top,
+          roi.left,
+          roi.bottom,
+          roi.right,
+          roi.bottom,
+          roi.right,
+          roi.top,
+        ]),
         height: 0,
         material: Color.YELLOWGREEN.withAlpha(0.125),
         outline: true,
-        outlineColor: Color.YELLOW
-      }
+        outlineColor: Color.YELLOW,
+      },
     });
 
     //get dummy points
     const pointsArray = utils.getDummyPointsArray(num, roi);
 
-    if (false)
+    if (true)
       for (let i = 0; i < pointsArray.length; i++) {
         const degs = pointsArray[i];
 
@@ -156,12 +161,12 @@ const App = ({ title }) => {
 
       const found = new Map();
 
-      search.naiveSearch(pointsArray, found, degs, 100, 1, 1);//0.01);
+      search.naiveSearch(pointsArray, found, degs, 100, 1, 1); //0.01);
 
       if (found.size > 0) {
         let arr = Array.from(found);
 
-        arr = arr.map(arr0 => arr0[1]);
+        arr = arr.map((arr0) => arr0[1]);
 
         for (let i = 0; i < arr.length; i++) {
           const point0 = arr[i];
@@ -171,7 +176,7 @@ const App = ({ title }) => {
             point0.y
           );
 
-          myEllipse && cesiumViewer.entities.remove(myEllipse);
+          //myEllipse && cesiumViewer.entities.remove(myEllipse);
 
           const myEllipse0 = cesiumViewer.entities.add({
             position: cartesianPoint,
