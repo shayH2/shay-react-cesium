@@ -36,7 +36,7 @@ const App = ({ title }) => {
     }
     cesiumViewer = new Viewer('CesiumMap');
 
-    const num = 50;
+    const num = 580;
 
     const roi = new regionOfInterest(-100, 40, -80, 20);
 

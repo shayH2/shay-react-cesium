@@ -44,20 +44,20 @@ const initDummyPointsArray = (num, roi) => {
     const x = roi.left + Math.nextRandomNumber() * width;
 
     const y = roi.bottom + Math.nextRandomNumber() * height;
-/*
-    let x0 = Math.nextRandomNumber() * diameter;
 
-    let x1 = x0 / 2;
+    let xProj = Math.nextRandomNumber() * radius;
 
-    let y0 = Math.cbrt(r2 - x1 * x1) * 2;
+    let yProj2 = r2 - xProj * xProj;
 
-    y0 = Math.nextRandomNumber() * y0;
+    let yProj = sqrt(yProj2);
+
+    let x0 = xProj * 2;
+    let y0 = yProj * 2 * Math.nextRandomNumber();;
 
     x0 += left;
     y0 += bottom;
-    */
 
-    const newPoint = new point(x, y);
+    const newPoint = new point(x0, y0);
 
     let index = middle;
 
@@ -175,6 +175,19 @@ const floorDivision = (num, denom) => {
 const min = (a, b) => a < b ? a : b;
 
 const max = (a, b) => a > b ? a : b;
+
+const sqrt = (num) => {
+  let approx = num / 2;
+
+  let i = 0;
+
+  while (i < 10) {
+    approx = (approx + num / approx) / 2;
+    i++;
+  }
+
+  return approx;
+}
 
 // entity.position = cartesian;
 // entity.label.show = true;
