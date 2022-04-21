@@ -45,17 +45,17 @@ const initDummyPointsArray = (num, roi) => {
 
     const y = roi.bottom + Math.nextRandomNumber() * height;
 
-    let xProj = Math.nextRandomNumber() * radius;
-
-    let yProj2 = r2 - xProj * xProj;
-
-    let yProj = sqrt(yProj2);
-
-    let x0 = xProj * 2;
-    let y0 = yProj * 2 * Math.nextRandomNumber();;
+    let x0 = diameter * Math.nextRandomNumber();
 
     x0 += left;
-    y0 += bottom;
+
+    let dx = centerX - x0;
+
+    let dy2 = r2 - dx * dx;
+
+    let dy = sqrt(dy2);
+
+    let y0 = centerY + dy * (Math.nextRandomNumber() * 2 - 1);
 
     const newPoint = new point(x0, y0);
 
