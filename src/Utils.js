@@ -8,11 +8,7 @@ import point from './classes/Point';
 let pointsArray;
 
 const getDummyPointsArray = (num, roi) => {
-  if (!pointsArray)
-    pointsArray = initDummyPointsArray(
-      num,
-      roi
-    );
+  if (!pointsArray) pointsArray = initDummyPointsArray(num, roi);
 
   return pointsArray;
 };
@@ -44,18 +40,6 @@ const initDummyPointsArray = (num, roi) => {
     const x = roi.left + Math.nextRandomNumber() * width;
 
     const y = roi.bottom + Math.nextRandomNumber() * height;
-/*
-    let x0 = Math.nextRandomNumber() * diameter;
-
-    let x1 = x0 / 2;
-
-    let y0 = Math.cbrt(r2 - x1 * x1) * 2;
-
-    y0 = Math.nextRandomNumber() * y0;
-
-    x0 += left;
-    y0 += bottom;
-    */
 
     const newPoint = new point(x, y);
 
@@ -69,16 +53,14 @@ const initDummyPointsArray = (num, roi) => {
       while (index <= end && newPoint.x >= currentPoint.x) {
         index++;
 
-        if (index <= end)
-          currentPoint = arr[index];
+        if (index <= end) currentPoint = arr[index];
       }
 
       if (index === middle)
         while (index >= begin && newPoint.x <= currentPoint.x) {
           index--;
 
-          if (index >= begin)
-            currentPoint = arr[index];
+          if (index >= begin) currentPoint = arr[index];
         }
 
       index = min(arr.length - 1, index);
@@ -101,22 +83,21 @@ const initDummyPointsArray = (num, roi) => {
 
         let newIndex = index;
 
-        if ((distFromBegin < distToEnd || end >= (arr.length - 1)) && begin > 0) {
+        if (
+          (distFromBegin < distToEnd || end >= arr.length - 1) &&
+          begin > 0
+        ) {
           begin--;
 
-          if (arr[index].x > newPoint.x)
-            newIndex--;
+          if (arr[index].x > newPoint.x) newIndex--;
 
-          for (let j = begin; j < newIndex; j++)
-            arr[j] = arr[j + 1];
+          for (let j = begin; j < newIndex; j++) arr[j] = arr[j + 1];
         } else {
           end++;
 
-          if (arr[index].x < newPoint.x)
-            newIndex++;
+          if (arr[index].x < newPoint.x) newIndex++;
 
-          for (let j = end; j > newIndex; j--)
-            arr[j] = arr[j - 1];
+          for (let j = end; j > newIndex; j--) arr[j] = arr[j - 1];
         }
 
         arr[newIndex] = newPoint;
@@ -129,38 +110,6 @@ const initDummyPointsArray = (num, roi) => {
   return arr;
 };
 
-
-
-const kuku = () => {
-
-
-  let max = null;
-
-  let i = 0;
-
-  let errorIndex = 0;
-
-  while (errorIndex < 1 && i < arr.length) {
-    let x = arr[i].x;
-
-    console.log(`arr[${i}]: ${x}`);
-
-    if (max === null)
-      max = x;
-
-    if (x < max)
-      errorIndex = i;
-
-    i++;
-  }
-
-  if (errorIndex > 0)
-    alert(`error index = ${errorIndex}`);
-
-}
-
-
-
 const floorDivision = (num, denom) => {
   let remainder = num % denom;
 
@@ -170,11 +119,11 @@ const floorDivision = (num, denom) => {
   }
 
   return num / denom;
-}
+};
 
-const min = (a, b) => a < b ? a : b;
+const min = (a, b) => (a < b ? a : b);
 
-const max = (a, b) => a > b ? a : b;
+const max = (a, b) => (a > b ? a : b);
 
 // entity.position = cartesian;
 // entity.label.show = true;

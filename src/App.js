@@ -24,8 +24,12 @@ import CoordsFormComp from './CoordsFormComp';
 
 let cesiumViewer;
 
+//latitude(width) longitude(length)
+
 const App = ({ title }) => {
   const [moving, setMoving] = useState({ lon: null, lat: null });
+
+  let foundEntities = [];
 
   useLayoutEffect(() => {
     Ion.defaultAccessToken =
@@ -34,24 +38,30 @@ const App = ({ title }) => {
     if (cesiumViewer) {
       return;
     }
+
     cesiumViewer = new Viewer('CesiumMap');
 
-    const num = 50;
+    const numOfPoints = 50;
 
-    const roi = new regionOfInterest(-100, 40, -80, 20);
+    //israel
+    const roi = new regionOfInterest(26.74, 32.87, 35.49, 28.48);
 
+    const centerPoint = roi.Center;
+
+    var cartesianCenter = Cartesian3.fromDegrees(
+      centerPoint.x,
+      centerPoint.y
+    );
+
+    cesiumViewer.camera.lookAt(
+      cartesianCenter,
+      new Cartesian3(0.0, 0.0, 4200000.0)
+    );
+
+    //draw polygon
     const roiEntity = cesiumViewer.entities.add({
       polygon: {
-        hierarchy: Cartesian3.fromDegreesArray([
-          roi.left,
-          roi.top,
-          roi.left,
-          roi.bottom,
-          roi.right,
-          roi.bottom,
-          roi.right,
-          roi.top,
-        ]),
+        hierarchy: Cartesian3.fromDegreesArray(roi.toFlatPolygon()),
         height: 0,
         material: Color.YELLOWGREEN.withAlpha(0.125),
         outline: true,
@@ -60,9 +70,11 @@ const App = ({ title }) => {
     });
 
     //get dummy points
-    const pointsArray = utils.getDummyPointsArray(num, roi);
+    const pointsArray = utils.getDummyPointsArray(numOfPoints, roi);
 
-    if (true)
+    let toDrawPointsArray = true;
+
+    if (toDrawPointsArray)
       for (let i = 0; i < pointsArray.length; i++) {
         const degs = pointsArray[i];
 
@@ -80,7 +92,7 @@ const App = ({ title }) => {
       }
 
     //label of moving
-    const entity = cesiumViewer.entities.add({
+    const tooltip = cesiumViewer.entities.add({
       label: {
         show: false,
         showBackground: true,
@@ -114,11 +126,15 @@ const App = ({ title }) => {
       //setMoving({ lon: strs[0], lat: strs[1] });
       const validMoving = Array.isArray(strs) && strs.length === 2;
 
-      entity.label.show = validMoving;
+      tooltip.label.show = validMoving;
 
       if (validMoving) {
-        entity.position = cartesian;
-        entity.label.text =
+        tooltip.position = cartesian; /*new Cartesian3(
+          cartesian.x,
+          cartesian.y,
+          0
+        );*/
+        tooltip.label.text =
           `Lon: ${`   ${strs[0]}`.slice(-7)}\u00B0` +
           `\nLat: ${`   ${strs[1]}`.slice(-7)}\u00B0`;
       }
@@ -126,17 +142,18 @@ const App = ({ title }) => {
       //   //alert(movement);
     }, ScreenSpaceEventType.MOUSE_MOVE);
 
+    let myInterval;
+
     //left down
     handler.setInputAction((pickObject) => {
+      foundEntities.forEach((ent) =>
+        cesiumViewer.entities.remove(ent)
+      );
+
       const cartesianPoint = cesiumViewer.camera.pickEllipsoid(
         pickObject.position,
         scene.globe.ellipsoid
       );
-
-      //cesiumViewer.camera.lookAt(
-      //cartesianPoint,
-      //new Cartesian3(0.0, 0.0, 4200000.0)
-      //);
 
       const strs = convert.convertSceneCoordinatesToDegreesString(
         pickObject.position,
@@ -155,7 +172,7 @@ const App = ({ title }) => {
       });
       //viewer.zoomTo(cesiumViewer.entities);
 
-      var ellipse = entity.ellipse; // For upcoming examples
+      var ellipse = tooltip.ellipse; // For upcoming examples
 
       const degs = convert.convertCartesian2Degrees(cartesianPoint);
 
@@ -178,6 +195,23 @@ const App = ({ title }) => {
 
           //myEllipse && cesiumViewer.entities.remove(myEllipse);
 
+          myInterval && window.clearInterval(myInterval);
+
+          let opac = 0.5;
+
+          myInterval = window.setInterval(() => {
+            //alert(myEllipse.material);
+            opac *= 0.9;
+
+            myEllipse.ellipse.material = Color.BLUE.withAlpha(opac);
+
+            if (opac < 0.25) {
+              window.clearInterval(myInterval);
+
+              myInterval = null;
+            }
+          }, 850);
+
           const myEllipse0 = cesiumViewer.entities.add({
             position: cartesianPoint,
             ellipse: {
@@ -186,6 +220,8 @@ const App = ({ title }) => {
               material: Color.BLACK.withAlpha(0.5),
             },
           });
+
+          foundEntities.push(myEllipse0);
         }
       }
 
@@ -193,7 +229,7 @@ const App = ({ title }) => {
     }, ScreenSpaceEventType.LEFT_DOWN);
   }, []);
 
-  //form callbak
+  //form callbak setCoordsByForm
   const setCoordsByForm = (coords) => {
     var cartesianPoint = Cartesian3.fromDegrees(
       parseFloat(coords.lon),
