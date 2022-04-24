@@ -41,7 +41,19 @@ const initDummyPointsArray = (num, roi) => {
 
         const y = roi.bottom + Math.nextRandomNumber() * height;
 
-        const newPoint = new point(x, y);
+        let x0 = diameter * Math.nextRandomNumber();
+
+        x0 += left;
+
+        let dx = centerX - x0;
+
+        let dy2 = r2 - dx * dx;
+
+        let dy = sqrt(dy2);
+
+        let y0 = centerY + dy * (Math.nextRandomNumber() * 2 - 1);
+
+        const newPoint = new point(x0, y0);
 
         let index = middle;
 
@@ -189,6 +201,31 @@ function convexHull(points) {
 const min = (a, b) => (a < b ? a : b);
 
 const max = (a, b) => (a > b ? a : b);
+
+const abs = val => val < 0 ? val * -1 : val;
+
+const sqrt = (num) => {
+    let approx = num / 2;
+
+    let close = false;
+
+    let i = 10;
+
+    let prev;
+
+    while (!close && i > 0) {
+        i--;
+
+        approx = (approx + num / approx) / 2;
+
+        if (prev && abs(prev - approx) < 0.01)
+            close = true;
+
+        prev = approx;
+    }
+
+    return approx;
+}
 
 // entity.position = cartesian;
 // entity.label.show = true;
