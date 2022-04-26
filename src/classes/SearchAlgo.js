@@ -2,56 +2,54 @@
 
 import { utils } from './Conversions';
 
-const binarySearch = (pointsArray, pickedPoint, begin, end) => {};
-
 const naiveSearch = (
-  pointsArray,
-  found,
-  pickedPoint,
-  nearestDevices = 10,
-  dist = 0.1,
-  delta = 0.1,
-  max = 3
+    pointsArray,
+    found,
+    pickedPoint,
+    nearestDevices = 10,
+    dist = 0.1,
+    delta = 0.1,
+    max = 3
 ) => {
-  const lon = pickedPoint.x;
-  const lat = pickedPoint.y;
+    const lon = pickedPoint.x;
+    const lat = pickedPoint.y;
 
-  let index = 0;
+    let index = 0;
 
-  const dist2 = dist * dist;
+    const dist2 = dist * dist;
 
-  while (found.size < nearestDevices && index < pointsArray.length) {
-    const currentIndex = index;
+    while (found.size < nearestDevices && index < pointsArray.length) {
+        const currentIndex = index;
 
-    const point0 = pointsArray[index++];
+        const point0 = pointsArray[index++];
 
-    if (!found.has(currentIndex)) {
-      const dx = point0.x - lon;
-      const dy = point0.y - lat;
+        if (!found.has(currentIndex)) {
+            const dx = point0.x - lon;
+            const dy = point0.y - lat;
 
-      const c2 = dx * dx + dy * dy;
+            const c2 = dx * dx + dy * dy;
 
-      if (c2 < dist2) found.set(currentIndex, point0);
+            if (c2 < dist2) found.set(currentIndex, point0);
+        }
     }
-  }
 
-  if (delta > 0 && found.size < nearestDevices && dist < max)
-    naiveSearch(
-      pointsArray,
-      found,
-      pickedPoint,
-      nearestDevices,
-      dist + delta,
-      delta
-    );
+    if (delta > 0 && found.size < nearestDevices && dist < max)
+        naiveSearch(
+            pointsArray,
+            found,
+            pickedPoint,
+            nearestDevices,
+            dist + delta,
+            delta
+        );
 };
 
 const abs = (num) => {
-  if (num < 0) num *= -1;
+    if (num < 0) num *= -1;
 
-  return num;
+    return num;
 };
 
 export default {
-  naiveSearch,
+    naiveSearch,
 };
