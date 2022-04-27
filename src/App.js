@@ -215,7 +215,7 @@ const App = ({ title }) => {
           ////////const point0 = elem[1];
           const point0 = elem;
 
-          alert(`x = ${point0.x}, y = ${point0.y}, d = ${point0.distance}`);
+          //alert(`x = ${point0.x}, y = ${point0.y}, d = ${point0.distance}`);
 
           const cartesianPoint = Cartesian3.fromDegrees(
             point0.x,
