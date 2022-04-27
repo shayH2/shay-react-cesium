@@ -249,6 +249,13 @@ const App = ({ title }) => {
               semiMajorAxis: 4000.0,
               material: Color.BLACK.withAlpha(0.5),
             },
+            label: {
+              //id: 'my label',
+              text: point0.index.toString(),
+              fillColor: Color.YELLOW.withAlpha(0.85),
+              outline: true,
+              outlineColor: Color.RED,
+            }
           });
 
           foundEntities.push(myEllipse0);
