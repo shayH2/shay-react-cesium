@@ -9,8 +9,8 @@ const Col = "Col";
 const Comment0 = "Comment";
 
 const hitTest = (row, col, arrayOfArrays, threshold = {
-    Distance: 4,
-    Squared: 16
+    Distance: 0.1,
+    Squared: 0.01
 }, maxList = 1) => {
     let obj0;
 
@@ -39,7 +39,7 @@ const hitTest = (row, col, arrayOfArrays, threshold = {
                 distance: null
             };
 
-            result = searchArray(arrRows, obj, pointBegin, pointEnd, checkedObjects); //, (obj, obj0, threshold) => distanceRow(obj, obj0));
+            result = searchPointsArray(arrRows, obj, pointBegin, pointEnd, checkedObjects); //, (obj, obj0, threshold) => distanceRow(obj, obj0));
         }
 
         return result;
@@ -169,6 +169,9 @@ const sequentialBypass = (arr, searchPoint, relatedPoint, checkedObjects = null)
 
 
 const searchPointsArray = (arr, searchPoint, pointBegin, pointEnd, checkedObjects = null) => {
+    if (!searchPoint)
+        return;
+
     let result = null;
 
     if (pointEnd.index < pointBegin.index)
@@ -193,12 +196,12 @@ const searchPointsArray = (arr, searchPoint, pointBegin, pointEnd, checkedObject
         const pointDistMiddle = pointDistance(searchPoint, pointMiddle);
 
         if (pointDistMiddle < threshold.Squared)
-            return pointMiddle;
+            return [pointMiddle];
 
         result = sequentialBypass(arr, searchPoint, pointMiddle, checkedObjects);
 
         if (result)
-            return result;
+            return [result];
     }
 
     pointBegin.distance = xDistance(searchPoint, pointBegin);
@@ -212,7 +215,7 @@ const searchPointsArray = (arr, searchPoint, pointBegin, pointEnd, checkedObject
         result = sequentialBypass(arr, searchPoint, pointBegin, checkedObjects);
 
         if (result)
-            return result;
+            return [result];
     }
 
     pointEnd.distance = xDistance(searchPoint, pointEnd);
@@ -226,22 +229,19 @@ const searchPointsArray = (arr, searchPoint, pointBegin, pointEnd, checkedObject
         result = sequentialBypass(arr, searchPoint, pointEnd, checkedObjects);
 
         if (result)
-            return result;
+            return [result];
     }
 
     if (pointMiddle.index < pointEnd.index) {
         const productUpper = pointMiddle.distance * pointEnd.distance;
 
         if (productUpper < 0) {
-            pointBeginNew = {
-                index: pointMiddle.index + 1,
-                distance: null
-            };
+            pointBeginNew = new point(null, null, null, null, pointMiddle.index + 1);
 
-            result = searchArray(list, obj, pointBeginNew, pointEnd, checkedObjects);
+            result = searchPointsArray(list, obj, pointBeginNew, pointEnd, checkedObjects);
 
             if (result)
-                return result;
+                return [result];
         }
     }
 
@@ -249,179 +249,14 @@ const searchPointsArray = (arr, searchPoint, pointBegin, pointEnd, checkedObject
         const productLower = pointBegin.distance * pointMiddle.distance;
 
         if (productLower < 0) {
-            pointEndNew = {
-                index: pointMiddle.index - 1,
-                distance: null
-            };
+            pointEndNew = new point(null, null, null, null, pointMiddle.index - 1);
 
             result = searchArray(list, obj, pointBegin, pointEndNew, checkedObjects);
 
             if (result)
-                return result;
+                return [result];
         }
     }
-}
-
-
-
-
-
-
-
-
-
-
-const searchArray0 = (list, obj, b, e, prevPoint = null, minPoint = null, checkedObjects = null) => {
-    let result = null;
-
-    if (e < b)
-        return null;
-
-    const middle = Math.floor((b + e) / 2);
-
-    const objMiddle = list.arr[middle];
-
-    const rowDistMiddle = rowDistance(obj, objMiddle);
-
-    if (Array.isArray(checkedObjects))
-        checkedObjects.push({
-            index: middle,
-            row: objMiddle.val.Row,
-            col: objMiddle.val.Col,
-            dist: rowDistMiddle
-        });
-
-    if (Math.abs(rowDistMiddle) < Math.abs(threshold.Distance)) {
-        const pointDistMiddle = pointDistance(obj, objMiddle);
-
-        if (pointDistMiddle < threshold.Squared)
-            return objMiddle;
-
-        prevPoint = setPoint(middle, rowDistMiddle);
-
-        minPoint = setDoubleIndexPoint(minPoint, prevPoint.index, prevPoint.distance, threshold.Distance);
-
-        if (middle > b)
-            result = searchArray(list, obj, b, middle - 1, prevPoint, minPoint, checkedObjects);
-
-        if (result)
-            return result;
-
-        if (middle < e)
-            result = searchArray(list, obj, middle + 1, e, prevPoint, minPoint, checkedObjects);
-
-        if (result)
-            return result;
-    } else {
-        if (prevPoint === null) {
-            prevPoint = setPoint(middle, rowDistMiddle);
-
-            minPoint = setDoubleIndexPoint(minPoint, prevPoint.index, prevPoint.distance, threshold.Distance);
-
-            if (middle > b)
-                result = searchArray(list, obj, b, middle - 1, prevPoint, minPoint, checkedObjects);
-
-            if (result)
-                return result;
-
-            if (middle < e)
-                result = searchArray(list, obj, middle + 1, e, prevPoint, minPoint, checkedObjects);
-
-            if (result)
-                return result;
-        } else {
-            const prevPointTemp = prevPoint;
-            const minPointTemp = minPoint;
-
-            prevPoint = setPoint(middle, rowDistMiddle);
-
-            let prevMin = null;
-            let currMin = null;
-
-            if (minPoint && "min" in minPoint)
-                prevMin = minPoint.min;
-
-            minPoint = setDoubleIndexPoint(minPoint, prevPoint.index, prevPoint.distance);
-
-            if (minPoint && "min" in minPoint)
-                currMin = minPoint.min;
-
-            if (Math.abs(currMin) && Math.abs(prevMin)) {
-                if (middle > b) // && middle > prevPointTemp.index)
-                    result = searchArray(list, obj, b, middle - 1, prevPoint, minPoint, checkedObjects);
-
-                if (result)
-                    return result;
-
-                if (middle < e) // && middle < prevPointTemp.index)
-                    result = searchArray(list, obj, middle + 1, e, prevPoint, minPoint, checkedObjects);
-
-                if (result)
-                    return result;
-            } else {
-                if (Math.abs(rowDistMiddle) > Math.abs(prevPointTemp.distance)) {
-                    if (middle > b && middle > prevPointTemp.index)
-                        result = searchArray(list, obj, b, middle - 1, prevPoint, minPoint, checkedObjects);
-
-                    if (result)
-                        return result;
-
-                    if (middle < e && middle < prevPointTemp.index)
-                        result = searchArray(list, obj, middle + 1, e, prevPoint, minPoint, checkedObjects);
-
-                    if (result)
-                        return result;
-                } else {
-                    if (minPoint.distance > 0 && rowDistMiddle > minPoint.distance) {
-                        const a = 0;
-                    } else if (minPoint.distance < 0 && rowDistMiddle < minPoint.distance) {
-                        const a = 0;
-                    } else {
-                        if (middle > b)
-                            result = searchArray(list, obj, b, middle - 1, prevPoint, minPoint, checkedObjects);
-
-                        if (result)
-                            return result;
-
-                        if (middle < e)
-                            resulot = searchArray(list, obj, middle + 1, e, prevPoint, minPoint, checkedObjects);
-
-                        if (result)
-                            return result;
-                    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    /*
-                                        if (middle < e && middle > prevPointTemp.index) {
-                                            if (middle < minPointTemp.min)
-                                                searchArray(arrCols, list, obj, middle + 1, e, prevPoint, minPoint, checkedObjects);
-                                            else if (middle > b)
-                                                searchArray(arrCols, list, obj, b, middle - 1, prevPoint, minPoint, checkedObjects);
-                                        }
-                                        if (middle > b && middle < prevPointTemp.index) {
-                                            if (middle > minPointTemp.max)
-                                                searchArray(arrCols, list, obj, b, middle - 1, prevPoint, minPoint, checkedObjects);
-                                            else if (e < middle)
-                                                searchArray(arrCols, list, obj, middle + 1, e, prevPoint, minPoint, checkedObjects);
-                                        }
-                                        */
-                }
-            }
-        }
-    }
-
-    return result;
 }
 
 // Naive method, to be replaced with a proper one.

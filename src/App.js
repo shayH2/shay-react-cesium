@@ -93,11 +93,7 @@ const App = ({ title }) => {
                                 //add points to viewer
                                 utils.myEllipse = cesiumViewer.entities.add({
                                     position: cartesianPoint,
-                                    //ellipse: {
-                                    //semiMinorAxis: 2500.0,
-                                    //semiMajorAxis: 4000.0,
-                                    //material: Color.RED.withAlpha(0.5),
-                                    //},
+
                                     billboard: {
                                         image: canvas.toDataURL(),
                                         verticalOrigin: VerticalOrigin.BOTTOM,
@@ -107,11 +103,6 @@ const App = ({ title }) => {
                                 if (false)
                                     utils.myEllipse = cesiumViewer.entities.add({
                                         position: cartesianPoint,
-                                        //ellipse: {
-                                        //semiMinorAxis: 2500.0,
-                                        //semiMajorAxis: 4000.0,
-                                        //material: Color.RED.withAlpha(0.5),
-                                        //},
                                         label: {
                                             //id: 'my label',
                                             text: degs.index.toString(),
@@ -207,20 +198,24 @@ const App = ({ title }) => {
 
       const degs = convert.convertCartesian2Degrees(cartesianPoint);
 
-      const found = new Map(); //points that found
-      search.naiveSearch(pointsArray, found, degs, 100, 1, 1); //0.01);
+      ////////const found = new Map(); //points that found
+      ////////search.naiveSearch(pointsArray, found, degs, 100, 1, 1); //0.01);
 
-      //const found = searchBinary.searchPointsArray(pointsArray, degs, pointsArray[0], pointsArray[pointsArray.length - 1], null);
+      const found = searchBinary.searchPointsArray(pointsArray, degs, pointsArray[0], pointsArray[pointsArray.length - 1], null);
 
-      if (found.size > 0) {
-        //if (found.length > 0) {
+      //if (found.size > 0) {
+        if (Array.isArray(found) && found.length > 0) {
         //let arr = Array.from(found);
 
         //arr = arr.map((arr0) => arr0[1]);
 
         //for (let i = 0; i < arr.length; i++) {
+          //const point0 = arr[i];
         for (let elem of found) {
-          const point0 = elem[1];
+          ////////const point0 = elem[1];
+          const point0 = elem;
+
+          alert(`x = ${point0.x}, y = ${point0.y}, d = ${point0.distance}`);
 
           const cartesianPoint = Cartesian3.fromDegrees(
             point0.x,
