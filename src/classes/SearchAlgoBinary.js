@@ -207,7 +207,7 @@ const searchPointsArray = (arr, searchPoint, pointBegin, pointEnd, checkedObject
         const pointDistBegin = pointDistance(searchPoint, pointBegin);
 
         if (pointDistBegin < threshold.Squared)
-            return objBegin;
+            return [pointBegin];
 
         result = sequentialBypass(arr, searchPoint, pointBegin, checkedObjects);
 
@@ -221,7 +221,7 @@ const searchPointsArray = (arr, searchPoint, pointBegin, pointEnd, checkedObject
         const pointDistEnd = pointDistance(searchPoint, pointEnd);
 
         if (pointDistEnd < threshold.Squared)
-            return objEnd;
+            return [pointEnd];
 
         result = sequentialBypass(arr, searchPoint, pointEnd, checkedObjects);
 
