@@ -7,18 +7,18 @@ import regionOfInterest from './classes/Region';
 import utils from './Utils';
 
 import {
-    Ion,
-    Viewer,
-    ScreenSpaceEventHandler,
-    ScreenSpaceEventType,
-    Color,
-    Cartographic,
-    Math,
-    Cartesian2,
-    Cartesian3,
-    HorizontalOrigin,
-    VerticalOrigin,
-    PinBuilder,
+  Ion,
+  Viewer,
+  ScreenSpaceEventHandler,
+  ScreenSpaceEventType,
+  Color,
+  Cartographic,
+  Math,
+  Cartesian2,
+  Cartesian3,
+  HorizontalOrigin,
+  VerticalOrigin,
+  PinBuilder,
 } from 'cesium';
 //import { Cesium } from cesium-react;
 import '../node_modules/cesium/Build/Cesium/Widgets/widgets.css';
@@ -29,135 +29,136 @@ let cesiumViewer;
 //latitude(width) longitude(length)
 
 const App = ({ title }) => {
-        const [moving, setMoving] = useState({ lon: null, lat: null });
+  const [moving, setMoving] = useState({ lon: null, lat: null });
 
-        let foundEntities = [];
+  let foundEntities = [];
+  let foundPolygon;
 
-        useLayoutEffect(() => {
-                    Ion.defaultAccessToken =
-                        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJiMmZkNDMyOC0wOWM3LTQyOTQtYWU2ZS0yMjc2NGRjNGJlY2UiLCJpZCI6ODc5MjgsImlhdCI6MTY0OTAxNjU2NX0.abaJS2YS9TNnqSBxrUu8BEjtu_qq8eTagE-moYQrc4g';
-                    window.CESIUM_BASE_URL = './cesium';
-                    if (cesiumViewer) {
-                        return;
-                    }
+  useLayoutEffect(() => {
+    Ion.defaultAccessToken =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJiMmZkNDMyOC0wOWM3LTQyOTQtYWU2ZS0yMjc2NGRjNGJlY2UiLCJpZCI6ODc5MjgsImlhdCI6MTY0OTAxNjU2NX0.abaJS2YS9TNnqSBxrUu8BEjtu_qq8eTagE-moYQrc4g';
+    window.CESIUM_BASE_URL = './cesium';
+    if (cesiumViewer) {
+      return;
+    }
 
-                    cesiumViewer = new Viewer('CesiumMap');
+    cesiumViewer = new Viewer('CesiumMap');
 
-                    const numOfPoints = 500;
+    const numOfPoints = 500;
 
-                    //israel
-                    const roi = new regionOfInterest(26.74, 32.87, 35.49, 28.48);
+    //israel
+    const roi = new regionOfInterest(26.74, 32.87, 35.49, 28.48);
 
-                    const centerPoint = roi.Center;
+    const centerPoint = roi.Center;
 
-                    var cartesianCenter = Cartesian3.fromDegrees(
-                        centerPoint.x,
-                        centerPoint.y
-                    );
+    var cartesianCenter = Cartesian3.fromDegrees(
+      centerPoint.x,
+      centerPoint.y
+    );
 
-                    cesiumViewer.camera.lookAt(
-                        cartesianCenter,
-                        new Cartesian3(0.0, 0.0, 4200000.0)
-                    );
+    cesiumViewer.camera.lookAt(
+      cartesianCenter,
+      new Cartesian3(0.0, 0.0, 4200000.0)
+    );
 
-                    //draw polygon
-                    const roiEntity = cesiumViewer.entities.add({
-                        polygon: {
-                            hierarchy: Cartesian3.fromDegreesArray(roi.toFlatPolygon()),
-                            height: 0,
-                            material: Color.YELLOWGREEN.withAlpha(0.125),
-                            outline: true,
-                            outlineColor: Color.YELLOW,
-                        },
-                    });
+    //draw polygon
+    const roiEntity = cesiumViewer.entities.add({
+      polygon: {
+        hierarchy: Cartesian3.fromDegreesArray(roi.toFlatPolygon()),
+        height: 0,
+        material: Color.YELLOWGREEN.withAlpha(0.125),
+        outline: true,
+        outlineColor: Color.YELLOW,
+      },
+    });
 
-                    //get dummy points
-                    const pointsArray = utils.getDummyPointsArray(numOfPoints, roi);
+    //get dummy points
+    const pointsArray = utils.getDummyPointsArray(numOfPoints, roi);
 
-                    let toDrawPointsArray = true;
+    let toDrawPointsArray = true;
 
-                    const pinBuilder = new PinBuilder();
+    const pinBuilder = new PinBuilder();
 
-                    if (toDrawPointsArray) {
-                        Promise.resolve(
-                            pinBuilder.fromMakiIconId('hospital', Color.RED, 48)
-                        ).then(function(canvas) {
-                            for (let i = 0; i < pointsArray.length; i++) {
-                                const degs = pointsArray[i];
+    if (toDrawPointsArray) {
+      Promise.resolve(
+        pinBuilder.fromMakiIconId('hospital', Color.RED, 48)
+      ).then(function (canvas) {
+        for (let i = 0; i < pointsArray.length; i++) {
+          const degs = pointsArray[i];
 
-                                const cartesianPoint = Cartesian3.fromDegrees(
-                                    degs.x,
-                                    degs.y
-                                );
+          const cartesianPoint = Cartesian3.fromDegrees(
+            degs.x,
+            degs.y
+          );
 
-                                //add points to viewer
-                                utils.myEllipse = cesiumViewer.entities.add({
-                                    position: cartesianPoint,
+          //add points to viewer
+          utils.myEllipse = cesiumViewer.entities.add({
+            position: cartesianPoint,
 
-                                    billboard: {
-                                        image: canvas.toDataURL(),
-                                        verticalOrigin: VerticalOrigin.BOTTOM,
-                                    },
-                                });
+            billboard: {
+              image: canvas.toDataURL(),
+              verticalOrigin: VerticalOrigin.BOTTOM,
+            },
+          });
 
-                                if (false)
-                                    utils.myEllipse = cesiumViewer.entities.add({
-                                        position: cartesianPoint,
-                                        label: {
-                                            //id: 'my label',
-                                            text: degs.index.toString(),
-                                        },
-                                    });
-                            }
-                        });
-                    }
+          if (false)
+            utils.myEllipse = cesiumViewer.entities.add({
+              position: cartesianPoint,
+              label: {
+                //id: 'my label',
+                text: degs.index.toString(),
+              },
+            });
+        }
+      });
+    }
 
-                    //label of moving
-                    const tooltip = cesiumViewer.entities.add({
-                        label: {
-                            show: false,
-                            showBackground: true,
-                            font: '14px monospace',
-                            horizontalOrigin: HorizontalOrigin.LEFT,
-                            verticalOrigin: VerticalOrigin.TOP,
-                            pixelOffset: new Cartesian2(15, 0),
-                        },
-                    });
+    //label of moving
+    const tooltip = cesiumViewer.entities.add({
+      label: {
+        show: false,
+        showBackground: true,
+        font: '14px monospace',
+        horizontalOrigin: HorizontalOrigin.LEFT,
+        verticalOrigin: VerticalOrigin.TOP,
+        pixelOffset: new Cartesian2(15, 0),
+      },
+    });
 
-                    //scene -render screen
-                    const scene = cesiumViewer.scene;
+    //scene -render screen
+    const scene = cesiumViewer.scene;
 
-                    console.log(`scene = ${scene}`);
+    console.log(`scene = ${scene}`);
 
-                    console.log(`canvas = ${scene.canvas}`);
+    console.log(`canvas = ${scene.canvas}`);
 
-                    const handler = new ScreenSpaceEventHandler(scene.canvas);
+    const handler = new ScreenSpaceEventHandler(scene.canvas);
 
-                    let myEllipse;
+    let myEllipse;
 
-                    //mouse move
-                    handler.setInputAction((movement) => {
-                                const cartesian = convert.convertSceneCoordinatesToCartesian(
-                                    movement.endPosition,
-                                    cesiumViewer
-                                );
+    //mouse move
+    handler.setInputAction((movement) => {
+      const cartesian = convert.convertSceneCoordinatesToCartesian(
+        movement.endPosition,
+        cesiumViewer
+      );
 
-                                const strs = convert.convertCartesian2DegreesString(cartesian);
+      const strs = convert.convertCartesian2DegreesString(cartesian);
 
-                                //setMoving({ lon: strs[0], lat: strs[1] });
-                                const validMoving = Array.isArray(strs) && strs.length === 2;
+      //setMoving({ lon: strs[0], lat: strs[1] });
+      const validMoving = Array.isArray(strs) && strs.length === 2;
 
-                                tooltip.label.show = validMoving;
+      tooltip.label.show = validMoving;
 
-                                if (validMoving) {
-                                    tooltip.position = cartesian;
-                                    /*new Cartesian3(
-                                                                         cartesian.x,
-                                                                         cartesian.y,
-                                                                         0
-                                                                       );*/
-                                    tooltip.label.text =
-                                        `Lon: ${`   ${strs[0]}`.slice(-7)}\u00B0` +
+      if (validMoving) {
+        tooltip.position = cartesian;
+        /*new Cartesian3(
+                                             cartesian.x,
+                                             cartesian.y,
+                                             0
+                                           );*/
+        tooltip.label.text =
+          `Lon: ${`   ${strs[0]}`.slice(-7)}\u00B0` +
           `\nLat: ${`   ${strs[1]}`.slice(-7)}\u00B0`;
       }
 
@@ -182,6 +183,8 @@ const App = ({ title }) => {
         cesiumViewer
       );
 
+      foundPolygon && cesiumViewer.entities.remove(foundPolygon);
+
       myEllipse && cesiumViewer.entities.remove(myEllipse);
 
       myEllipse = cesiumViewer.entities.add({
@@ -204,17 +207,59 @@ const App = ({ title }) => {
       const found = searchBinary.searchPointsArray(pointsArray, degs, pointsArray[0], pointsArray[pointsArray.length - 1], null);
 
       //if (found.size > 0) {
-        if (Array.isArray(found) && found.length > 0) {
-        //let arr = Array.from(found);
+      if (Array.isArray(found) && found.length > 0) {
+        //alert(`found length = ${found.length}`);
 
-        //arr = arr.map((arr0) => arr0[1]);
+        let convex;
 
-        //for (let i = 0; i < arr.length; i++) {
-          //const point0 = arr[i];
-        for (let elem of found) {
-          ////////const point0 = elem[1];
-          const point0 = elem;
+        try {
+          //convex = utils.convexHull(found);
+        } catch (e) {
+          //alert(`exception = ${e}`);
+        }
 
+        if (Array.isArray(convex) && convex.length > 2) {
+          //alert(`convex length = ${convex.length}`);
+
+          let flat = [];
+
+          for (let i = 0; i < convex.length; i++) {
+            const point0 = convex[i];
+
+            flat.push(point0.x);
+            flat.push(point0.y);
+          }
+
+          foundPolygon = cesiumViewer.entities.add({
+            polygon: {
+              hierarchy: Cartesian3.fromDegreesArray(flat),
+              height: 0,
+              //material: Color.YELLOWGREEN.withAlpha(0.125),
+              outline: true,
+              outlineColor: Color.RED,
+            },
+          });
+        }
+
+        myInterval && window.clearInterval(myInterval);
+
+        let opac = 0.5;
+
+        myInterval = window.setInterval(() => {
+          //alert(myEllipse.material);
+          opac *= 0.9;
+
+          myEllipse.ellipse.material = Color.BLUE.withAlpha(opac);
+
+          if (opac < 0.25) {
+            window.clearInterval(myInterval);
+
+            myInterval = null;
+          }
+        }, 850);
+
+        for (let i = 0; i < found.length; i++) {
+          const point0 = found[i];
           //alert(`x = ${point0.x}, y = ${point0.y}, d = ${point0.distance}`);
 
           const cartesianPoint = Cartesian3.fromDegrees(
@@ -223,23 +268,6 @@ const App = ({ title }) => {
           );
 
           //myEllipse && cesiumViewer.entities.remove(myEllipse);
-
-          myInterval && window.clearInterval(myInterval);
-
-          let opac = 0.5;
-
-          myInterval = window.setInterval(() => {
-            //alert(myEllipse.material);
-            opac *= 0.9;
-
-            myEllipse.ellipse.material = Color.BLUE.withAlpha(opac);
-
-            if (opac < 0.25) {
-              window.clearInterval(myInterval);
-
-              myInterval = null;
-            }
-          }, 850);
 
           //add found points
           const myEllipse0 = cesiumViewer.entities.add({
