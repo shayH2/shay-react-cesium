@@ -209,11 +209,12 @@ const App = ({ title }) => {
       //if (found.size > 0) {
       if (Array.isArray(found) && found.length > 0) {
         //alert(`found length = ${found.length}`);
+        found.sort((p1, p2) => p1.x - p2.x);
 
         let convex;
 
         try {
-          //convex = utils.convexHull(found);
+          convex = utils.convexHull(found);
         } catch (e) {
           //alert(`exception = ${e}`);
         }
@@ -234,7 +235,7 @@ const App = ({ title }) => {
             polygon: {
               hierarchy: Cartesian3.fromDegreesArray(flat),
               height: 0,
-              //material: Color.YELLOWGREEN.withAlpha(0.125),
+              material: Color.YELLOWGREEN.withAlpha(0.01),
               outline: true,
               outlineColor: Color.RED,
             },
