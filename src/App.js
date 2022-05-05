@@ -5,6 +5,7 @@ import searchBinary from './classes/SearchAlgoBinary';
 import point from './classes/Point';
 import regionOfInterest from './classes/Region';
 import utils from './Utils';
+import './App.css';
 
 import {
   Ion,
@@ -23,6 +24,7 @@ import {
 //import { Cesium } from cesium-react;
 import '../node_modules/cesium/Build/Cesium/Widgets/widgets.css';
 import CoordsFormComp from './CoordsFormComp';
+import CitiesComp from './CitiesComp';
 
 let cesiumViewer;
 
@@ -30,6 +32,7 @@ let cesiumViewer;
 
 const App = ({ title }) => {
   const [moving, setMoving] = useState({ lon: null, lat: null });
+  const [regionEntity, setRegionEntity] = useState();
 
   let foundEntities = [];
   let foundPolygon;
@@ -47,7 +50,7 @@ const App = ({ title }) => {
     const numOfPoints = 500;
 
     //israel
-    const roi = new regionOfInterest(26.74, 32.87, 35.49, 28.48);
+    const roi = new regionOfInterest(31.74, 32.87, 35.49, 28.48);
 
     const centerPoint = roi.Center;
 
@@ -91,15 +94,16 @@ const App = ({ title }) => {
             degs.y
           );
 
-          //add points to viewer
-          utils.myEllipse = cesiumViewer.entities.add({
-            position: cartesianPoint,
+          if (false)
+            //add points to viewer
+            utils.myEllipse = cesiumViewer.entities.add({
+              position: cartesianPoint,
 
-            billboard: {
-              image: canvas.toDataURL(),
-              verticalOrigin: VerticalOrigin.BOTTOM,
-            },
-          });
+              billboard: {
+                image: canvas.toDataURL(),
+                verticalOrigin: VerticalOrigin.BOTTOM,
+              },
+            });
 
           if (false)
             utils.myEllipse = cesiumViewer.entities.add({
@@ -204,7 +208,13 @@ const App = ({ title }) => {
       ////////const found = new Map(); //points that found
       ////////search.naiveSearch(pointsArray, found, degs, 100, 1, 1); //0.01);
 
-      const found = searchBinary.searchPointsArray(pointsArray, degs, pointsArray[0], pointsArray[pointsArray.length - 1], null);
+      const found = searchBinary.searchPointsArray(
+        pointsArray,
+        degs,
+        pointsArray[0],
+        pointsArray[pointsArray.length - 1],
+        null
+      );
 
       //if (found.size > 0) {
       if (Array.isArray(found) && found.length > 0) {
@@ -271,23 +281,25 @@ const App = ({ title }) => {
           //myEllipse && cesiumViewer.entities.remove(myEllipse);
 
           //add found points
-          const myEllipse0 = cesiumViewer.entities.add({
-            position: cartesianPoint,
-            ellipse: {
-              semiMinorAxis: 2500.0,
-              semiMajorAxis: 4000.0,
-              material: Color.BLACK.withAlpha(0.5),
-            },
-            label: {
-              //id: 'my label',
-              text: point0.index.toString(),
-              fillColor: Color.YELLOW.withAlpha(0.85),
-              outline: true,
-              outlineColor: Color.RED,
-            }
-          });
+          if (false) {
+            const myEllipse0 = cesiumViewer.entities.add({
+              position: cartesianPoint,
+              ellipse: {
+                semiMinorAxis: 2500.0,
+                semiMajorAxis: 4000.0,
+                material: Color.BLACK.withAlpha(0.5),
+              },
+              label: {
+                //id: 'my label',
+                text: point0.index.toString(),
+                fillColor: Color.YELLOW.withAlpha(0.85),
+                outline: true,
+                outlineColor: Color.RED,
+              },
+            });
 
-          foundEntities.push(myEllipse0);
+            foundEntities.push(myEllipse0);
+          }
         }
       }
 
@@ -307,13 +319,42 @@ const App = ({ title }) => {
     );
   };
 
+  const cityPicked = (id, region) => {
+    setCity(id);
+
+    regionEntity && cesiumViewer.entities.remove(regionEntity);
+
+    //draw polygon
+    setRegionEntity(
+      cesiumViewer.entities.add({
+        polygon: {
+          hierarchy: Cartesian3.fromDegreesArray(
+            region.toFlatPolygon()
+          ),
+          height: 0,
+          material: Color.PURPLE.withAlpha(0.325),
+          outline: true,
+          outlineColor: Color.ORANGERED,
+        },
+      })
+    );
+  };
+
+  const [city, setCity] = useState();
+
   return (
     <div>
+      {city}
       {moving.lon}, {moving.lat}
-      <div
-        id="CesiumMap"
-        style={{ width: '850px', height: '850px' }}
-      ></div>
+      <div>
+        <div
+          id="CesiumMap"
+          style={{ width: '80%', float: 'left' }}
+        ></div>
+        <div style={{ width: '20%', float: 'right' }}>
+          <CitiesComp callback={cityPicked} />
+        </div>
+      </div>
       <div>
         <CoordsFormComp callback={setCoordsByForm} />
       </div>
