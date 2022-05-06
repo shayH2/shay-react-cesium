@@ -153,7 +153,9 @@ const searchSequential = (arr, searchPoint, foundPoint, coordIndex) => {
     return foundArray;
 };
 
-const searchPointsArray = (arr, searchPoint, pointBegin, pointEnd, coordIndex) => {
+const searchPointsArray = (arrMap, coordIndex, searchPoint, pointBegin, pointEnd) => {
+    const arr = arrMap.get(coordIndex);
+
     if (!searchPoint)
         return;
 
@@ -216,7 +218,7 @@ const searchPointsArray = (arr, searchPoint, pointBegin, pointEnd, coordIndex) =
             const pointBeginNew = arr[indexUp];
             pointBeginNew.index = pointMiddle.index + 1; //TODO:
 
-            result = searchPointsArray(arr, searchPoint, pointBeginNew, pointEnd, coordIndex);
+            result = searchPointsArray(arrMap, coordIndex, searchPoint, pointBeginNew, pointEnd);
 
             if (Array.isArray(result))
                 return result;
@@ -231,7 +233,7 @@ const searchPointsArray = (arr, searchPoint, pointBegin, pointEnd, coordIndex) =
             const pointEndNew = arr[indexDown];
             pointEndNew.index = indexDown; //TODO:
 
-            result = searchPointsArray(arr, searchPoint, pointBegin, pointEndNew, coordIndex);
+            result = searchPointsArray(arrMap, coordIndex, searchPoint, pointBegin, pointEndNew);
 
             if (Array.isArray(result))
                 return result;

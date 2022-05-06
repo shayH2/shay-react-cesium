@@ -76,7 +76,15 @@ const App = ({ title }) => {
                     });
 
                     //get dummy points
-                    const pointsArray = utils.getDummyPointsArray(numOfPoints, roi);
+                    const pointsArrayCoord1 = utils.getDummyPointsArray(numOfPoints, roi, 1);
+                    const pointsArrayCoord2 = utils.getDummyPointsArray(numOfPoints, roi, 2);
+
+                    const arrMap = new Map();
+
+                    arrMap.set(1, pointsArrayCoord1);
+                    arrMap.set(2, pointsArrayCoord2);
+
+                    const pointsArray = pointsArrayCoord1;
 
                     let toDrawPointsArray = true;
 
@@ -209,11 +217,11 @@ const App = ({ title }) => {
       ////////search.naiveSearch(pointsArray, found, degs, 100, 1, 1); //0.01);
 
       const found = searchBinary.searchPointsArray(
-        pointsArray,
+        arrMap,
+        1,
         degs,
         pointsArray[0],
-        pointsArray[pointsArray.length - 1],
-        1
+        pointsArray[pointsArray.length - 1]
       );
 
       //if (found.size > 0) {

@@ -5,15 +5,27 @@ import { Cartographic, LabelStyle, Math } from 'cesium';
 import convert from './classes/Conversions';
 import MyPoint from './classes/Point';
 
-let pointsArray;
+let arrayOfArrays;
 
-const getDummyPointsArray = (num, roi) => {
-    if (!pointsArray) pointsArray = initDummyPointsArray(num, roi);
+const getDummyPointsArray = (num, roi, coordIndex) => {
+    let pointsArray;
+
+    if (!Array.isArray(arrayOfArrays))
+        arrayOfArrays = Array(2).fill(null);
+
+    //if (Array.isArray(arrayOfArrays) && coordIndex < arrayOfArrays.length)
+    pointsArray = arrayOfArrays[coordIndex];
+
+    if (!pointsArray) {
+        pointsArray = initDummyPointsArray(num, roi, coordIndex);
+
+        arrayOfArrays[coordIndex] = pointsArray;
+    }
 
     return pointsArray;
 };
 
-const initDummyPointsArray = (num, roi) => {
+const initDummyPointsArray = (num, roi, coordIndex) => {
     const width = roi.right - roi.left;
     const height = roi.top - roi.bottom;
 
@@ -52,7 +64,7 @@ const initDummyPointsArray = (num, roi) => {
         arr[i] = new MyPoint(x, y);
     }
 
-    return initSortedPointsArray(arr, 2);
+    return initSortedPointsArray(arr, coordIndex);
 }
 
 const initSortedPointsArray = (unordered, coordIndex) => {
