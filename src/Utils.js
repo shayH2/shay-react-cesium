@@ -3,7 +3,7 @@
 import { Cartographic, LabelStyle, Math } from 'cesium';
 
 import convert from './classes/Conversions';
-import point from './classes/Point';
+import MyPoint from './classes/Point';
 
 let pointsArray;
 
@@ -49,10 +49,10 @@ const initDummyPointsArray = (num, roi) => {
             let y0 = centerY + dy * (Math.nextRandomNumber() * 2 - 1);
             */
 
-        arr[i] = new point(x, y);
+        arr[i] = new MyPoint(x, y);
     }
 
-    return initSortedPointsArray(arr, 1);
+    return initSortedPointsArray(arr, 2);
 }
 
 const initSortedPointsArray = (unordered, coordIndex) => {

@@ -2,7 +2,7 @@ import React, { useState, useLayoutEffect, StrictMode } from 'react';
 import convert from './classes/Conversions';
 import search from './classes/SearchAlgo';
 import searchBinary from './classes/SearchAlgoBinary';
-import point from './classes/Point';
+import MyPoint from './classes/Point';
 import regionOfInterest from './classes/Region';
 import utils from './Utils';
 import './App.css';
@@ -213,7 +213,7 @@ const App = ({ title }) => {
         degs,
         pointsArray[0],
         pointsArray[pointsArray.length - 1],
-        null
+        1
       );
 
       //if (found.size > 0) {

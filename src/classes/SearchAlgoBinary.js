@@ -1,6 +1,6 @@
 'use strict';
 
-import point from './Point';
+import MyPoint from './Point';
 
 const val = "val";
 const Id = "Id";
@@ -15,7 +15,7 @@ const pointDistance = (p1, p2) => {
     return dx * dx + dy * dy;
 };
 
-const xDistance = (p1, p2) => p1.x - p2.x;
+const xDistance = (p1, p2, coordIndex) => p1.getCoord(coordIndex) - p2.getCoord(coordIndex);
 
 const threshold = {
     Distance: 0.5,
@@ -68,7 +68,7 @@ const setDoubleIndexPoint = (point, index, distance, threshold = null) => {
 
 
 
-const sequentialBypass = (arr, searchPoint, relatedPoint, checkedObjects = null) => {
+const sequentialBypass = (arr, searchPoint, relatedPoint, coordIndex) => {
     let result = null;
 
     let i = relatedPoint.index + 1;
@@ -78,15 +78,7 @@ const sequentialBypass = (arr, searchPoint, relatedPoint, checkedObjects = null)
     while (result === null && distance < threshold.Distance && i < arr.length) {
         let point0 = arr[i];
 
-        distance = xDistance(searchPoint, point0);
-
-        if (Array.isArray(checkedObjects))
-            checkedObjects.push({
-                index: i,
-                row: obj0.val.Row,
-                col: obj0.val.Col,
-                dist: distance
-            });
+        distance = xDistance(searchPoint, point0, coordIndex);
 
         i++;
 
@@ -98,28 +90,20 @@ const sequentialBypass = (arr, searchPoint, relatedPoint, checkedObjects = null)
         }
     }
 
-    i = point.index - 1;
+    i = relatedPoint.index - 1;
 
     while (result === null && distance < threshold.Distance && i >= 0) {
-        let obj0 = list.arr[i];
+        let point0 = arr[i];
 
-        distance = xDistance(obj, obj0);
-
-        if (Array.isArray(checkedObjects))
-            checkedObjects.push({
-                index: i,
-                row: obj0.val.Row,
-                col: obj0.val.Col,
-                dist: distance
-            });
+        distance = xDistance(searchPoint, point0, coordIndex);
 
         i--;
 
         if (Math.abs(distance) < Math.abs(threshold.Distance)) {
-            const squared = pointDistance(obj, obj0);
+            const squared = pointDistance(searchPoint, point0);
 
             if (squared < threshold.Squared)
-                result = obj0;
+                result = point0;
         }
     }
 
@@ -127,7 +111,7 @@ const sequentialBypass = (arr, searchPoint, relatedPoint, checkedObjects = null)
 }
 
 
-const searchSequential = (arr, searchPoint, foundPoint) => {
+const searchSequential = (arr, searchPoint, foundPoint, coordIndex) => {
     let foundArray = [foundPoint];
 
     let up = foundPoint.index + 1;
@@ -139,7 +123,7 @@ const searchSequential = (arr, searchPoint, foundPoint) => {
     while (!notFoundUp && up < arr.length) {
         const pointUp = arr[up++];
 
-        pointUp.distance = xDistance(searchPoint, pointUp);
+        pointUp.distance = xDistance(searchPoint, pointUp, coordIndex);
 
         const foundUp = Math.abs(pointUp.distance) < Math.abs(threshold.Distance);
 
@@ -154,7 +138,7 @@ const searchSequential = (arr, searchPoint, foundPoint) => {
     while (!notFoundDown && down >= 0) {
         const pointDown = arr[down--];
 
-        pointDown.distance = xDistance(searchPoint, pointDown);
+        pointDown.distance = xDistance(searchPoint, pointDown, coordIndex);
 
         const foundDown = Math.abs(pointDown.distance) < Math.abs(threshold.Distance);
 
@@ -169,7 +153,7 @@ const searchSequential = (arr, searchPoint, foundPoint) => {
     return foundArray;
 };
 
-const searchPointsArray = (arr, searchPoint, pointBegin, pointEnd, checkedObjects = null) => {
+const searchPointsArray = (arr, searchPoint, pointBegin, pointEnd, coordIndex) => {
     if (!searchPoint)
         return;
 
@@ -182,43 +166,43 @@ const searchPointsArray = (arr, searchPoint, pointBegin, pointEnd, checkedObject
 
     const pointMiddle = arr[middle];
 
-    pointMiddle.distance = xDistance(searchPoint, pointMiddle);
+    pointMiddle.distance = xDistance(searchPoint, pointMiddle, coordIndex);
 
     if (Math.abs(pointMiddle.distance) < Math.abs(threshold.Distance)) {
         const pointDistMiddle = pointDistance(searchPoint, pointMiddle);
 
         if (pointDistMiddle < threshold.Squared)
-            return searchSequential(arr, searchPoint, pointMiddle);
+            return searchSequential(arr, searchPoint, pointMiddle, coordIndex);
 
-        result = sequentialBypass(arr, searchPoint, pointMiddle, checkedObjects);
+        result = sequentialBypass(arr, searchPoint, pointMiddle, coordIndex);
 
         if (Array.isArray(result))
             return result;
     }
 
-    pointBegin.distance = xDistance(searchPoint, pointBegin);
+    pointBegin.distance = xDistance(searchPoint, pointBegin, coordIndex);
 
     if (Math.abs(pointBegin.distance) < Math.abs(threshold.Distance)) {
         const pointDistBegin = pointDistance(searchPoint, pointBegin);
 
         if (pointDistBegin < threshold.Squared)
-            return searchSequential(arr, searchPoint, pointBegin);
+            return searchSequential(arr, searchPoint, pointBegin, coordIndex);
 
-        result = sequentialBypass(arr, searchPoint, pointBegin, checkedObjects);
+        result = sequentialBypass(arr, searchPoint, pointBegin, coordIndex);
 
         if (Array.isArray(result))
             return result;
     }
 
-    pointEnd.distance = xDistance(searchPoint, pointEnd);
+    pointEnd.distance = xDistance(searchPoint, pointEnd, coordIndex);
 
     if (Math.abs(pointEnd.distance) < Math.abs(threshold.Distance)) {
         const pointDistEnd = pointDistance(searchPoint, pointEnd);
 
         if (pointDistEnd < threshold.Squared)
-            return searchSequential(arr, searchPoint, pointEnd);
+            return searchSequential(arr, searchPoint, pointEnd, coordIndex);
 
-        result = sequentialBypass(arr, searchPoint, pointEnd, checkedObjects);
+        result = sequentialBypass(arr, searchPoint, pointEnd, coordIndex);
 
         if (Array.isArray(result))
             return result;
@@ -232,7 +216,7 @@ const searchPointsArray = (arr, searchPoint, pointBegin, pointEnd, checkedObject
             const pointBeginNew = arr[indexUp];
             pointBeginNew.index = pointMiddle.index + 1; //TODO:
 
-            result = searchPointsArray(arr, searchPoint, pointBeginNew, pointEnd, checkedObjects);
+            result = searchPointsArray(arr, searchPoint, pointBeginNew, pointEnd, coordIndex);
 
             if (Array.isArray(result))
                 return result;
@@ -247,7 +231,7 @@ const searchPointsArray = (arr, searchPoint, pointBegin, pointEnd, checkedObject
             const pointEndNew = arr[indexDown];
             pointEndNew.index = indexDown; //TODO:
 
-            result = searchPointsArray(arr, searchPoint, pointBegin, pointEndNew, checkedObjects);
+            result = searchPointsArray(arr, searchPoint, pointBegin, pointEndNew, coordIndex);
 
             if (Array.isArray(result))
                 return result;
