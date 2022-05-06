@@ -30,12 +30,6 @@ const initDummyPointsArray = (num, roi) => {
 
     const arr = Array(num).fill(null);
 
-    const middle = floorDivision(num, 2);
-
-    let begin, end;
-
-    begin = end = middle;
-
     for (let i = 0; i < num; i++) {
         const x = roi.left + Math.nextRandomNumber() * width;
 
@@ -55,7 +49,25 @@ const initDummyPointsArray = (num, roi) => {
             let y0 = centerY + dy * (Math.nextRandomNumber() * 2 - 1);
             */
 
-        const newPoint = new point(x, y);
+        arr[i] = new point(x, y);
+    }
+
+    return initSortedPointsArray(arr);
+}
+
+const initSortedPointsArray = (unordered) => {
+    const num = unordered.length;
+
+    const arr = Array(num).fill(null);
+
+    const middle = floorDivision(num, 2);
+
+    let begin, end;
+
+    begin = end = middle;
+
+    for (let i = 0; i < num; i++) {
+        const newPoint = unordered[i];
 
         let index = middle;
 
@@ -96,8 +108,6 @@ const initDummyPointsArray = (num, roi) => {
                 const distFromBegin = index - begin;
                 const distToEnd = end - index;
 
-                //alert(`begin = ${begin}, end = ${end}, index = ${index}, distFromBegin = ${distFromBegin}, distToEnd = ${distToEnd}`);
-
                 let newIndex = index;
 
                 if (
@@ -126,13 +136,11 @@ const initDummyPointsArray = (num, roi) => {
                 arr[newIndex] = newPoint;
                 newPoint.index = newIndex;
             }
-
-            //alert(`begin = ${begin}, end= ${end}`);
         }
     }
 
     return arr;
-};
+}
 
 const floorDivision = (num, denom) => {
     let remainder = num % denom;
