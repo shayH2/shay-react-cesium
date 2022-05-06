@@ -27,6 +27,22 @@ const CitiesComp = (props) => {
       name: 'Bnei Brak (pinguins)',
       region: new regionOfInterest(34.82, 32.1, 34.85, 32.07),
     },
+    {
+      //33.9, 32.87, 35.55, 29.5
+      id: 4,
+      name: 'North',
+      region: new regionOfInterest(33.9, 32.87, 35.55, 32.3),
+    },
+    {
+      id: 5,
+      name: 'Center',
+      region: new regionOfInterest(33.9, 32.3, 35.55, 31.3),
+    },
+    {
+      id: 6,
+      name: 'South',
+      region: new regionOfInterest(33.9, 31.3, 35.55, 29.5),
+    },
   ];
 
   const cityPicked = (event) => {
