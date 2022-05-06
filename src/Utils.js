@@ -52,10 +52,10 @@ const initDummyPointsArray = (num, roi) => {
         arr[i] = new point(x, y);
     }
 
-    return initSortedPointsArray(arr);
+    return initSortedPointsArray(arr, 1);
 }
 
-const initSortedPointsArray = (unordered) => {
+const initSortedPointsArray = (unordered, coordIndex) => {
     const num = unordered.length;
 
     const arr = Array(num).fill(null);
@@ -77,14 +77,14 @@ const initSortedPointsArray = (unordered) => {
             arr[index] = newPoint;
             newPoint.index = index;
         } else {
-            while (index <= end && newPoint.x >= currentPoint.x) {
+            while (index <= end && newPoint.getCoord(coordIndex) >= currentPoint.getCoord(coordIndex)) {
                 index++;
 
                 if (index <= end) currentPoint = arr[index];
             }
 
             if (index === middle)
-                while (index >= begin && newPoint.x <= currentPoint.x) {
+                while (index >= begin && newPoint.getCoord(coordIndex) <= currentPoint.getCoord(coordIndex)) {
                     index--;
 
                     if (index >= begin) currentPoint = arr[index];
@@ -116,7 +116,7 @@ const initSortedPointsArray = (unordered) => {
                 ) {
                     begin--;
 
-                    if (arr[index].x > newPoint.x) newIndex--;
+                    if (arr[index].getCoord(coordIndex) > newPoint.getCoord(coordIndex)) newIndex--;
 
                     for (let j = begin; j < newIndex; j++) {
                         arr[j] = arr[j + 1];
@@ -125,7 +125,7 @@ const initSortedPointsArray = (unordered) => {
                 } else {
                     end++;
 
-                    if (arr[index].x < newPoint.x) newIndex++;
+                    if (arr[index].getCoord(coordIndex) < newPoint.getCoord(coordIndex)) newIndex++;
 
                     for (let j = end; j > newIndex; j--) {
                         arr[j] = arr[j - 1];

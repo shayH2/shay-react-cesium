@@ -25,4 +25,12 @@ export default class point {
     set y(val) {
         this.coordY = val;
     }
+
+    getCoord = (index) => {
+        if (index === 1)
+            return this.coordX;
+
+        if (index === 2)
+            return this.coordY;
+    }
 }
