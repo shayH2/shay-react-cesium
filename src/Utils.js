@@ -8,201 +8,199 @@ import MyPoint from './classes/Point';
 let arrayOfArrays;
 
 const getDummyPointsArray = (num, roi, coordIndex) => {
-  let pointsArray;
+    let pointsArray;
 
-  if (!Array.isArray(arrayOfArrays))
-    arrayOfArrays = Array(2).fill(null);
+    if (!Array.isArray(arrayOfArrays))
+        arrayOfArrays = Array(2).fill(null);
 
-  //if (Array.isArray(arrayOfArrays) && coordIndex < arrayOfArrays.length)
-  pointsArray = arrayOfArrays[coordIndex];
+    //if (Array.isArray(arrayOfArrays) && coordIndex < arrayOfArrays.length)
+    pointsArray = arrayOfArrays[coordIndex];
 
-  if (!pointsArray) {
-    pointsArray = initDummyPointsArray(num, roi, coordIndex);
+    if (!pointsArray) {
+        pointsArray = initDummyPointsArray(num, roi, coordIndex);
 
-    arrayOfArrays[coordIndex] = pointsArray;
-  }
+        arrayOfArrays[coordIndex] = pointsArray;
+    }
 
-  return pointsArray;
+    return pointsArray;
 };
 
 const initDummyPointsArray = (num, roi, coordIndex) => {
-  const width = roi.right - roi.left;
-  const height = roi.top - roi.bottom;
+    const width = roi.right - roi.left;
+    const height = roi.top - roi.bottom;
 
-  const diameter = min(height, width);
-  const radius = diameter / 2;
+    const diameter = min(height, width);
+    const radius = diameter / 2;
 
-  const r2 = radius * radius;
+    const r2 = radius * radius;
 
-  const centerX = roi.left + width / 2;
-  const centerY = roi.bottom + height / 2;
+    const centerX = roi.left + width / 2;
+    const centerY = roi.bottom + height / 2;
 
-  const left = roi.left + width / 2 - radius;
-  const bottom = roi.bottom + height / 2 - radius;
+    const left = roi.left + width / 2 - radius;
+    const bottom = roi.bottom + height / 2 - radius;
 
-  const arr = Array(num).fill(null);
+    const arr = Array(num).fill(null);
 
-  for (let i = 0; i < num; i++) {
-    const x = roi.left + Math.nextRandomNumber() * width;
+    for (let i = 0; i < num; i++) {
+        const x = roi.left + Math.nextRandomNumber() * width;
 
-    const y = roi.bottom + Math.nextRandomNumber() * height;
+        const y = roi.bottom + Math.nextRandomNumber() * height;
 
-    /*
-            let x0 = diameter * Math.nextRandomNumber();
+        /*
+                let x0 = diameter * Math.nextRandomNumber();
 
-            x0 += left;
+                x0 += left;
 
-            let dx = centerX - x0;
+                let dx = centerX - x0;
 
-            let dy2 = r2 - dx * dx;
+                let dy2 = r2 - dx * dx;
 
-            let dy = sqrt(dy2);
+                let dy = sqrt(dy2);
 
-            let y0 = centerY + dy * (Math.nextRandomNumber() * 2 - 1);
-            */
+                let y0 = centerY + dy * (Math.nextRandomNumber() * 2 - 1);
+                */
 
-    arr[i] = new MyPoint(x, y);
-  }
+        arr[i] = new MyPoint(x, y);
+    }
 
-  return initSortedPointsArray(arr, coordIndex);
+    return initSortedPointsArray(arr, coordIndex);
 };
 
 const pointInPolygon = (point, polygon) => {
-  const x = point.x,
-    y = point.y;
+    const x = point.x,
+        y = point.y;
 
-  let inside = false;
+    let inside = false;
 
-  for (
-    let i = 0, j = polygon.length - 1;
-    i < polygon.length;
-    j = i++
-  ) {
-    var xi = polygon[i].x,
-      yi = polygon[i].y;
-    var xj = polygon[j].x,
-      yj = polygon[j].y;
+    for (
+        let i = 0, j = polygon.length - 1; i < polygon.length; j = i++
+    ) {
+        var xi = polygon[i].x,
+            yi = polygon[i].y;
+        var xj = polygon[j].x,
+            yj = polygon[j].y;
 
-    var intersect =
-      yi > y != yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
-    if (intersect) inside = !inside;
-  }
+        var intersect =
+            yi > y != yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
+        if (intersect) inside = !inside;
+    }
 
-  return inside;
+    return inside;
 };
 
 const initSortedPointsArray = (unordered, coordIndex) => {
-  const num = unordered.length;
+    const num = unordered.length;
 
-  const arr = Array(num).fill(null);
+    const arr = Array(num).fill(null);
 
-  const middle = floorDivision(num, 2);
+    const middle = floorDivision(num, 2);
 
-  let begin, end;
+    let begin, end;
 
-  begin = end = middle;
+    begin = end = middle;
 
-  for (let i = 0; i < num; i++) {
-    const newPoint = unordered[i];
+    for (let i = 0; i < num; i++) {
+        const newPoint = unordered[i];
 
-    let index = middle;
+        let index = middle;
 
-    let currentPoint = arr[index];
+        let currentPoint = arr[index];
 
-    if (!currentPoint) {
-      arr[index] = newPoint;
-      newPoint.index = index;
-    } else {
-      while (
-        index <= end &&
-        newPoint.getCoord(coordIndex) >=
-          currentPoint.getCoord(coordIndex)
-      ) {
-        index++;
-
-        if (index <= end) currentPoint = arr[index];
-      }
-
-      if (index === middle)
-        while (
-          index >= begin &&
-          newPoint.getCoord(coordIndex) <=
-            currentPoint.getCoord(coordIndex)
-        ) {
-          index--;
-
-          if (index >= begin) currentPoint = arr[index];
-        }
-
-      index = min(arr.length - 1, index);
-
-      index = max(0, index);
-
-      if (index > end) {
-        arr[index] = newPoint;
-        newPoint.index = index;
-
-        end = index;
-      } else if (index < begin) {
-        arr[index] = newPoint;
-        newPoint.index = index;
-
-        begin = index;
-      } else {
-        const distFromBegin = index - begin;
-        const distToEnd = end - index;
-
-        let newIndex = index;
-
-        if (
-          (distFromBegin < distToEnd || end >= arr.length - 1) &&
-          begin > 0
-        ) {
-          begin--;
-
-          if (
-            arr[index].getCoord(coordIndex) >
-            newPoint.getCoord(coordIndex)
-          )
-            newIndex--;
-
-          for (let j = begin; j < newIndex; j++) {
-            arr[j] = arr[j + 1];
-            arr[j].index = j;
-          }
+        if (!currentPoint) {
+            arr[index] = newPoint;
+            newPoint.indices[coordIndex] = index;
         } else {
-          end++;
+            while (
+                index <= end &&
+                newPoint.getCoord(coordIndex) >=
+                currentPoint.getCoord(coordIndex)
+            ) {
+                index++;
 
-          if (
-            arr[index].getCoord(coordIndex) <
-            newPoint.getCoord(coordIndex)
-          )
-            newIndex++;
+                if (index <= end) currentPoint = arr[index];
+            }
 
-          for (let j = end; j > newIndex; j--) {
-            arr[j] = arr[j - 1];
-            arr[j].index = j;
-          }
+            if (index === middle)
+                while (
+                    index >= begin &&
+                    newPoint.getCoord(coordIndex) <=
+                    currentPoint.getCoord(coordIndex)
+                ) {
+                    index--;
+
+                    if (index >= begin) currentPoint = arr[index];
+                }
+
+            index = min(arr.length - 1, index);
+
+            index = max(0, index);
+
+            if (index > end) {
+                arr[index] = newPoint;
+                newPoint.indices[coordIndex] = index;
+
+                end = index;
+            } else if (index < begin) {
+                arr[index] = newPoint;
+                newPoint.indices[coordIndex] = index;
+
+                begin = index;
+            } else {
+                const distFromBegin = index - begin;
+                const distToEnd = end - index;
+
+                let newIndex = index;
+
+                if (
+                    (distFromBegin < distToEnd || end >= arr.length - 1) &&
+                    begin > 0
+                ) {
+                    begin--;
+
+                    if (
+                        arr[index].getCoord(coordIndex) >
+                        newPoint.getCoord(coordIndex)
+                    )
+                        newIndex--;
+
+                    for (let j = begin; j < newIndex; j++) {
+                        arr[j] = arr[j + 1];
+                        arr[j].indices[coordIndex] = j;
+                    }
+                } else {
+                    end++;
+
+                    if (
+                        arr[index].getCoord(coordIndex) <
+                        newPoint.getCoord(coordIndex)
+                    )
+                        newIndex++;
+
+                    for (let j = end; j > newIndex; j--) {
+                        arr[j] = arr[j - 1];
+                        arr[j].indices[coordIndex] = j;
+                    }
+                }
+
+                arr[newIndex] = newPoint;
+                newPoint.indices[coordIndex] = newIndex;
+            }
         }
-
-        arr[newIndex] = newPoint;
-        newPoint.index = newIndex;
-      }
     }
-  }
 
-  return arr;
+    return arr;
 };
 
 const floorDivision = (num, denom) => {
-  let remainder = num % denom;
+    let remainder = num % denom;
 
-  while (remainder > 0) {
-    remainder--;
-    num--;
-  }
+    while (remainder > 0) {
+        remainder--;
+        num--;
+    }
 
-  return num / denom;
+    return num / denom;
 };
 
 // To find orientation of ordered triplet (p, q, r).
@@ -211,57 +209,57 @@ const floorDivision = (num, denom) => {
 // 1 --> Clockwise
 // 2 --> Counterclockwise
 function orientation(p, q, r) {
-  let val = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
+    let val = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
 
-  if (val == 0) return 0; // collinear
-  return val > 0 ? 1 : 2; // clock or counterclock wise
+    if (val == 0) return 0; // collinear
+    return val > 0 ? 1 : 2; // clock or counterclock wise
 }
 
 // Prints convex hull of a set of n points.
 function convexHull(points) {
-  // There must be at least 3 points
-  if (points.length < 3) return;
+    // There must be at least 3 points
+    if (points.length < 3) return;
 
-  // Initialize Result
-  let hull = [];
+    // Initialize Result
+    let hull = [];
 
-  // Start from leftmost point, keep moving
-  // counterclockwise until reach the start point
-  // again. This loop runs O(h) times where h is
-  // number of points in result or output.
-  let p = 0,
-    q;
-  do {
-    // Add current point to result
-    hull.push(points[p]);
+    // Start from leftmost point, keep moving
+    // counterclockwise until reach the start point
+    // again. This loop runs O(h) times where h is
+    // number of points in result or output.
+    let p = 0,
+        q;
+    do {
+        // Add current point to result
+        hull.push(points[p]);
 
-    // Search for a point 'q' such that
-    // orientation(p, q, x) is counterclockwise
-    // for all points 'x'. The idea is to keep
-    // track of last visited most counterclock-
-    // wise point in q. If any point 'i' is more
-    // counterclock-wise than q, then update q.
-    q = (p + 1) % points.length;
+        // Search for a point 'q' such that
+        // orientation(p, q, x) is counterclockwise
+        // for all points 'x'. The idea is to keep
+        // track of last visited most counterclock-
+        // wise point in q. If any point 'i' is more
+        // counterclock-wise than q, then update q.
+        q = (p + 1) % points.length;
 
-    for (let i = 0; i < points.length; i++) {
-      // If i is more counterclockwise than
-      // current q, then update q
-      if (orientation(points[p], points[i], points[q]) == 2) q = i;
-    }
+        for (let i = 0; i < points.length; i++) {
+            // If i is more counterclockwise than
+            // current q, then update q
+            if (orientation(points[p], points[i], points[q]) == 2) q = i;
+        }
 
-    // Now q is the most counterclockwise with
-    // respect to p. Set p as q for next iteration,
-    // so that q is added to result 'hull'
-    p = q;
-  } while (p != 0); // While we don't come to first
-  // point
+        // Now q is the most counterclockwise with
+        // respect to p. Set p as q for next iteration,
+        // so that q is added to result 'hull'
+        p = q;
+    } while (p != 0); // While we don't come to first
+    // point
 
-  // Print Result
-  ////for (let temp of hull.values())
-  ////document.write("(" + temp.x + ", " +
-  ////            temp.y + ")<br>");
+    // Print Result
+    ////for (let temp of hull.values())
+    ////document.write("(" + temp.x + ", " +
+    ////            temp.y + ")<br>");
 
-  return hull;
+    return hull;
 }
 
 const min = (a, b) => (a < b ? a : b);
@@ -271,25 +269,25 @@ const max = (a, b) => (a > b ? a : b);
 const abs = (val) => (val < 0 ? val * -1 : val);
 
 const sqrt = (num) => {
-  let approx = num / 2;
+    let approx = num / 2;
 
-  let close = false;
+    let close = false;
 
-  let i = 10;
+    let i = 10;
 
-  let prev;
+    let prev;
 
-  while (!close && i > 0) {
-    i--;
+    while (!close && i > 0) {
+        i--;
 
-    approx = (approx + num / approx) / 2;
+        approx = (approx + num / approx) / 2;
 
-    if (prev && abs(prev - approx) < 0.01) close = true;
+        if (prev && abs(prev - approx) < 0.01) close = true;
 
-    prev = approx;
-  }
+        prev = approx;
+    }
 
-  return approx;
+    return approx;
 };
 
 // entity.position = cartesian;
@@ -297,9 +295,10 @@ const sqrt = (num) => {
 // entity.text = text;
 
 export default {
-  getDummyPointsArray,
-  convexHull,
-  pointInPolygon,
+    initSortedPointsArray,
+    getDummyPointsArray,
+    convexHull,
+    pointInPolygon,
 };
 
 const CoordsImage = 1;

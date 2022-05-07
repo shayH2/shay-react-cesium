@@ -71,7 +71,7 @@ const setDoubleIndexPoint = (point, index, distance, threshold = null) => {
 const sequentialBypass = (arr, searchPoint, relatedPoint, coordIndex) => {
     let result = null;
 
-    let i = relatedPoint.index + 1;
+    let i = relatedPoint.indices[coordIndex] + 1;
 
     let distance = 0;
 
@@ -90,7 +90,7 @@ const sequentialBypass = (arr, searchPoint, relatedPoint, coordIndex) => {
         }
     }
 
-    i = relatedPoint.index - 1;
+    i = relatedPoint.indices[coordIndex] - 1;
 
     while (result === null && distance < threshold.Distance && i >= 0) {
         let point0 = arr[i];
@@ -114,8 +114,8 @@ const sequentialBypass = (arr, searchPoint, relatedPoint, coordIndex) => {
 const searchSequential = (arr, searchPoint, foundPoint, coordIndex) => {
     let foundArray = [foundPoint];
 
-    let up = foundPoint.index + 1;
-    let down = foundPoint.index - 1;
+    let up = foundPoint.indices[coordIndex] + 1;
+    let down = foundPoint.indices[coordIndex] - 1;
 
     let notFoundUp = false;
     let notFoundDown = false;
@@ -153,18 +153,25 @@ const searchSequential = (arr, searchPoint, foundPoint, coordIndex) => {
     return foundArray;
 };
 
-const searchPointsArray = (arrMap, coordIndex, searchPoint, pointBegin, pointEnd) => {
+const searchPointsArray = (arrMap, coordIndex, searchPoint) => {
     const arr = arrMap.get(coordIndex);
 
+    const pointBegin = arr[0];
+    const pointEnd = arr[arr.length - 1];
+
+    return searchPointsArrayImplementation(arr, coordIndex, searchPoint, pointBegin, pointEnd);
+}
+
+const searchPointsArrayImplementation = (arr, coordIndex, searchPoint, pointBegin, pointEnd) => {
     if (!searchPoint)
         return;
 
     let result = null;
 
-    if (pointEnd.index < pointBegin.index)
+    if (pointEnd.indices[coordIndex] < pointBegin.indices[coordIndex])
         return null;
 
-    const middle = Math.floor((pointBegin.index + pointEnd.index) / 2);
+    const middle = Math.floor((pointBegin.indices[coordIndex] + pointEnd.indices[coordIndex]) / 2);
 
     const pointMiddle = arr[middle];
 
@@ -210,30 +217,30 @@ const searchPointsArray = (arrMap, coordIndex, searchPoint, pointBegin, pointEnd
             return result;
     }
 
-    if (pointMiddle.index < pointEnd.index) {
+    if (pointMiddle.indices[coordIndex] < pointEnd.indices[coordIndex]) {
         const productUpper = pointMiddle.distance * pointEnd.distance;
 
         if (productUpper < 0) {
-            const indexUp = pointMiddle.index + 1;
+            const indexUp = pointMiddle.indices[coordIndex] + 1;
             const pointBeginNew = arr[indexUp];
-            pointBeginNew.index = pointMiddle.index + 1; //TODO:
+            pointBeginNew.indices[coordIndex] = pointMiddle.indices[coordIndex] + 1; //TODO:
 
-            result = searchPointsArray(arrMap, coordIndex, searchPoint, pointBeginNew, pointEnd);
+            result = searchPointsArrayImplementation(arr, coordIndex, searchPoint, pointBeginNew, pointEnd);
 
             if (Array.isArray(result))
                 return result;
         }
     }
 
-    if (pointMiddle.index > pointBegin.index) {
+    if (pointMiddle.indices[coordIndex] > pointBegin.indices[coordIndex]) {
         const productLower = pointBegin.distance * pointMiddle.distance;
 
         if (productLower < 0) {
-            const indexDown = pointMiddle.index - 1;
+            const indexDown = pointMiddle.indices[coordIndex] - 1;
             const pointEndNew = arr[indexDown];
-            pointEndNew.index = indexDown; //TODO:
+            pointEndNew.indices[coordIndex] = indexDown; //TODO:
 
-            result = searchPointsArray(arrMap, coordIndex, searchPoint, pointBegin, pointEndNew);
+            result = searchPointsArrayImplementation(arr, coordIndex, searchPoint, pointBegin, pointEndNew);
 
             if (Array.isArray(result))
                 return result;
