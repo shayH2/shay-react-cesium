@@ -1,15 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import App,{getCesiumViewer} from './App';
+import App, { getCesiumViewer } from './App';
 
 const title = 'My Minimal React Webpack Babel Setup';
 setTimeout(() => {
- console.log(getCesiumViewer())
+  console.log(getCesiumViewer());
 }, 2000);
 ReactDOM.render(
   <App title={title} />,
-  document.getElementById('app')
+  document.getElementById('root')
 );
 
 module.hot.accept();
