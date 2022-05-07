@@ -54,7 +54,7 @@ const App = ({ title }) => {
                     //israel
                     const roi = new regionOfInterest(33.9, 32.87, 35.55, 29.5);
 
-                    const centerPoint = roi.Center;
+                    const centerPoint = roi.center;
 
                     var cartesianCenter = Cartesian3.fromDegrees(
                         centerPoint.x,
@@ -227,8 +227,7 @@ const App = ({ title }) => {
         arrMap,
         1,
         degs,
-        pointsArray[0],
-        pointsArray[pointsArray.length - 1]
+        0
       );
 
       //if (found.size > 0) {
@@ -367,10 +366,17 @@ const App = ({ title }) => {
 
     let i = 0;
 
+    const foundPoint = searchBinary.searchPointsArray(
+      arrMap,
+      1,
+      region.center,
+      1
+    );
+
     while (i < arr.length) {
       const point = arr[i++];
 
-      if (utils.pointInPolygon(point, searchPolygon))
+      if (utils.pointInPolygon(point, searchPolygon, region))
         found.push(point);
     }
 

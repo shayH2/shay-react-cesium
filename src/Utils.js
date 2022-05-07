@@ -67,11 +67,18 @@ const initDummyPointsArray = (num, roi, coordIndex) => {
     return initSortedPointsArray(arr, coordIndex);
 };
 
-const pointInPolygon = (point, polygon) => {
+const pointInPolygon = (point, polygon, roi = null) => {
     const x = point.x,
         y = point.y;
 
     let inside = false;
+
+    if (roi) {
+        const inRoi = x >= roi.left && x <= roi.right && y >= roi.bottom && y <= roi.top;
+
+        if (!inRoi)
+            return false;
+    }
 
     for (
         let i = 0, j = polygon.length - 1; i < polygon.length; j = i++

@@ -111,7 +111,7 @@ const sequentialBypass = (arr, searchPoint, relatedPoint, coordIndex) => {
 }
 
 
-const searchSequential = (arr, searchPoint, foundPoint, coordIndex) => {
+const searchSequential = (arr, searchPoint, foundPoint, coordIndex, number = 0) => {
     let foundArray = [foundPoint];
 
     let up = foundPoint.indices[coordIndex] + 1;
@@ -120,7 +120,7 @@ const searchSequential = (arr, searchPoint, foundPoint, coordIndex) => {
     let notFoundUp = false;
     let notFoundDown = false;
 
-    while (!notFoundUp && up < arr.length) {
+    while ((number < 1 || foundArray.length < number) && !notFoundUp && up < arr.length) {
         const pointUp = arr[up++];
 
         pointUp.distance = xDistance(searchPoint, pointUp, coordIndex);
@@ -135,7 +135,7 @@ const searchSequential = (arr, searchPoint, foundPoint, coordIndex) => {
         }
     }
 
-    while (!notFoundDown && down >= 0) {
+    while ((number < 1 || foundArray.length < number) && !notFoundDown && down >= 0) {
         const pointDown = arr[down--];
 
         pointDown.distance = xDistance(searchPoint, pointDown, coordIndex);
@@ -153,16 +153,16 @@ const searchSequential = (arr, searchPoint, foundPoint, coordIndex) => {
     return foundArray;
 };
 
-const searchPointsArray = (arrMap, coordIndex, searchPoint) => {
+const searchPointsArray = (arrMap, coordIndex, searchPoint, number = 0) => {
     const arr = arrMap.get(coordIndex);
 
     const pointBegin = arr[0];
     const pointEnd = arr[arr.length - 1];
 
-    return searchPointsArrayImplementation(arr, coordIndex, searchPoint, pointBegin, pointEnd);
+    return searchPointsArrayImplementation(arr, coordIndex, searchPoint, pointBegin, pointEnd, number);
 }
 
-const searchPointsArrayImplementation = (arr, coordIndex, searchPoint, pointBegin, pointEnd) => {
+const searchPointsArrayImplementation = (arr, coordIndex, searchPoint, pointBegin, pointEnd, number = 0) => {
     if (!searchPoint)
         return;
 
@@ -181,7 +181,7 @@ const searchPointsArrayImplementation = (arr, coordIndex, searchPoint, pointBegi
         const pointDistMiddle = pointDistance(searchPoint, pointMiddle);
 
         if (pointDistMiddle < threshold.Squared)
-            return searchSequential(arr, searchPoint, pointMiddle, coordIndex);
+            return searchSequential(arr, searchPoint, pointMiddle, coordIndex, number);
 
         result = sequentialBypass(arr, searchPoint, pointMiddle, coordIndex);
 
@@ -195,7 +195,7 @@ const searchPointsArrayImplementation = (arr, coordIndex, searchPoint, pointBegi
         const pointDistBegin = pointDistance(searchPoint, pointBegin);
 
         if (pointDistBegin < threshold.Squared)
-            return searchSequential(arr, searchPoint, pointBegin, coordIndex);
+            return searchSequential(arr, searchPoint, pointBegin, coordIndex, number);
 
         result = sequentialBypass(arr, searchPoint, pointBegin, coordIndex);
 
@@ -209,7 +209,7 @@ const searchPointsArrayImplementation = (arr, coordIndex, searchPoint, pointBegi
         const pointDistEnd = pointDistance(searchPoint, pointEnd);
 
         if (pointDistEnd < threshold.Squared)
-            return searchSequential(arr, searchPoint, pointEnd, coordIndex);
+            return searchSequential(arr, searchPoint, pointEnd, coordIndex, number);
 
         result = sequentialBypass(arr, searchPoint, pointEnd, coordIndex);
 
@@ -225,7 +225,7 @@ const searchPointsArrayImplementation = (arr, coordIndex, searchPoint, pointBegi
             const pointBeginNew = arr[indexUp];
             pointBeginNew.indices[coordIndex] = pointMiddle.indices[coordIndex] + 1; //TODO:
 
-            result = searchPointsArrayImplementation(arr, coordIndex, searchPoint, pointBeginNew, pointEnd);
+            result = searchPointsArrayImplementation(arr, coordIndex, searchPoint, pointBeginNew, pointEnd, number);
 
             if (Array.isArray(result))
                 return result;
@@ -240,7 +240,7 @@ const searchPointsArrayImplementation = (arr, coordIndex, searchPoint, pointBegi
             const pointEndNew = arr[indexDown];
             pointEndNew.indices[coordIndex] = indexDown; //TODO:
 
-            result = searchPointsArrayImplementation(arr, coordIndex, searchPoint, pointBegin, pointEndNew);
+            result = searchPointsArrayImplementation(arr, coordIndex, searchPoint, pointBegin, pointEndNew, number);
 
             if (Array.isArray(result))
                 return result;
