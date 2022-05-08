@@ -8,18 +8,18 @@ import utils from './Utils';
 import './App.css';
 
 import {
-    Ion,
-    Viewer,
-    ScreenSpaceEventHandler,
-    ScreenSpaceEventType,
-    Color,
-    Cartographic,
-    Math,
-    Cartesian2,
-    Cartesian3,
-    HorizontalOrigin,
-    VerticalOrigin,
-    PinBuilder,
+  Ion,
+  Viewer,
+  ScreenSpaceEventHandler,
+  ScreenSpaceEventType,
+  Color,
+  Cartographic,
+  Math,
+  Cartesian2,
+  Cartesian3,
+  HorizontalOrigin,
+  VerticalOrigin,
+  PinBuilder,
 } from 'cesium';
 //import { Cesium } from cesium-react;
 import '../node_modules/cesium/Build/Cesium/Widgets/widgets.css';
@@ -31,153 +31,161 @@ let cesiumViewer;
 //latitude(width) longitude(length)
 
 const App = ({ title }) => {
-        const [moving, setMoving] = useState({ lon: null, lat: null });
-        const [regionEntity, setRegionEntity] = useState();
-        const [arrMap, setArrayMap] = useState(new Map());
-        const [foundArray, setFoundArray] = useState();
+  const [moving, setMoving] = useState({ lon: null, lat: null });
+  const [regionEntity, setRegionEntity] = useState();
+  const [arrMap, setArrayMap] = useState(new Map());
+  const [foundArray, setFoundArray] = useState();
 
-        let foundEntities = [];
-        let foundPolygon;
+  let foundEntities = [];
+  let foundPolygon;
 
-        useLayoutEffect(() => {
-                    Ion.defaultAccessToken =
-                        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJiMmZkNDMyOC0wOWM3LTQyOTQtYWU2ZS0yMjc2NGRjNGJlY2UiLCJpZCI6ODc5MjgsImlhdCI6MTY0OTAxNjU2NX0.abaJS2YS9TNnqSBxrUu8BEjtu_qq8eTagE-moYQrc4g';
-                    window.CESIUM_BASE_URL = './cesium';
-                    if (cesiumViewer) {
-                        return;
-                    }
+  useLayoutEffect(() => {
+    Ion.defaultAccessToken =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJiMmZkNDMyOC0wOWM3LTQyOTQtYWU2ZS0yMjc2NGRjNGJlY2UiLCJpZCI6ODc5MjgsImlhdCI6MTY0OTAxNjU2NX0.abaJS2YS9TNnqSBxrUu8BEjtu_qq8eTagE-moYQrc4g';
+    window.CESIUM_BASE_URL = './cesium';
+    if (cesiumViewer) {
+      return;
+    }
 
-                    cesiumViewer = new Viewer('CesiumMap');
+    cesiumViewer = new Viewer('CesiumMap');
 
-                    const numOfPoints = 500;
+    cesiumViewer.infoBox.frame.removeAttribute('sandbox');
 
-                    //israel
-                    const roi = new regionOfInterest(33.9, 32.87, 35.55, 29.5);
+    // So does this if you want to limit other things but allow scripts
+    //viewer.infoBox.frame.setAttribute("sandbox", "allow-same-origin allow-popups allow-forms allow-scripts");
 
-                    const centerPoint = roi.center;
+    // In both cases, you need to do this to force a reload for the change to take affect.
+    cesiumViewer.infoBox.frame.src = 'about:blank';
 
-                    var cartesianCenter = Cartesian3.fromDegrees(
-                        centerPoint.x,
-                        centerPoint.y
-                    );
+    const numOfPoints = 500;
 
-                    cesiumViewer.camera.lookAt(
-                        cartesianCenter,
-                        new Cartesian3(0.0, 0.0, 4200000.0)
-                    );
+    //israel
+    const roi = new regionOfInterest(33.9, 32.87, 35.55, 29.5);
 
-                    //draw polygon
-                    const roiEntity = cesiumViewer.entities.add({
-                        polygon: {
-                            hierarchy: Cartesian3.fromDegreesArray(roi.toFlatPolygon()),
-                            height: 0,
-                            material: Color.YELLOWGREEN.withAlpha(0.125),
-                            outline: true,
-                            outlineColor: Color.YELLOW,
-                        },
-                    });
+    const centerPoint = roi.center;
 
-                    //get dummy points
-                    const pointsArrayCoord1 = utils.getDummyPointsArray(
-                        numOfPoints,
-                        roi,
-                        1
-                    );
-                    const pointsArrayCoord2 = utils.initSortedPointsArray(
-                        pointsArrayCoord1,
-                        2
-                    );
+    var cartesianCenter = Cartesian3.fromDegrees(
+      centerPoint.x,
+      centerPoint.y
+    );
 
-                    arrMap.set(1, pointsArrayCoord1);
-                    arrMap.set(2, pointsArrayCoord2);
+    cesiumViewer.camera.lookAt(
+      cartesianCenter,
+      new Cartesian3(0.0, 0.0, 4200000.0)
+    );
 
-                    const pointsArray = pointsArrayCoord1;
+    //draw polygon
+    const roiEntity = cesiumViewer.entities.add({
+      polygon: {
+        hierarchy: Cartesian3.fromDegreesArray(roi.toFlatPolygon()),
+        height: 0,
+        material: Color.YELLOWGREEN.withAlpha(0.125),
+        outline: true,
+        outlineColor: Color.YELLOW,
+      },
+    });
 
-                    let toDrawPointsArray = true;
+    //get dummy points
+    const pointsArrayCoord1 = utils.getDummyPointsArray(
+      numOfPoints,
+      roi,
+      1
+    );
+    const pointsArrayCoord2 = utils.initSortedPointsArray(
+      pointsArrayCoord1,
+      2
+    );
 
-                    const pinBuilder = new PinBuilder();
+    arrMap.set(1, pointsArrayCoord1);
+    arrMap.set(2, pointsArrayCoord2);
 
-                    if (toDrawPointsArray) {
-                        Promise.resolve(
-                            pinBuilder.fromMakiIconId('hospital', Color.RED, 48)
-                        ).then(function(canvas) {
-                            for (let i = 0; i < pointsArray.length; i++) {
-                                const degs = pointsArray[i];
+    const pointsArray = pointsArrayCoord1;
 
-                                const cartesianPoint = Cartesian3.fromDegrees(
-                                    degs.x,
-                                    degs.y
-                                );
+    let toDrawPointsArray = true;
 
-                                if (false)
-                                //add points to viewer
-                                    utils.myEllipse = cesiumViewer.entities.add({
-                                    position: cartesianPoint,
+    const pinBuilder = new PinBuilder();
 
-                                    billboard: {
-                                        image: canvas.toDataURL(),
-                                        verticalOrigin: VerticalOrigin.BOTTOM,
-                                    },
-                                });
+    if (toDrawPointsArray) {
+      Promise.resolve(
+        pinBuilder.fromMakiIconId('hospital', Color.RED, 48)
+      ).then(function (canvas) {
+        for (let i = 0; i < pointsArray.length; i++) {
+          const degs = pointsArray[i];
 
-                                if (false)
-                                    utils.myEllipse = cesiumViewer.entities.add({
-                                        position: cartesianPoint,
-                                        label: {
-                                            //id: 'my label',
-                                            text: degs.index.toString(),
-                                        },
-                                    });
-                            }
-                        });
-                    }
+          const cartesianPoint = Cartesian3.fromDegrees(
+            degs.x,
+            degs.y
+          );
 
-                    //label of moving
-                    const tooltip = cesiumViewer.entities.add({
-                        label: {
-                            show: false,
-                            showBackground: true,
-                            font: '14px monospace',
-                            horizontalOrigin: HorizontalOrigin.LEFT,
-                            verticalOrigin: VerticalOrigin.TOP,
-                            pixelOffset: new Cartesian2(15, 0),
-                        },
-                    });
+          if (false)
+            //add points to viewer
+            utils.myEllipse = cesiumViewer.entities.add({
+              position: cartesianPoint,
 
-                    //scene -render screen
-                    const scene = cesiumViewer.scene;
+              billboard: {
+                image: canvas.toDataURL(),
+                verticalOrigin: VerticalOrigin.BOTTOM,
+              },
+            });
 
-                    console.log(`scene = ${scene}`);
+          if (false)
+            utils.myEllipse = cesiumViewer.entities.add({
+              position: cartesianPoint,
+              label: {
+                //id: 'my label',
+                text: degs.index.toString(),
+              },
+            });
+        }
+      });
+    }
 
-                    console.log(`canvas = ${scene.canvas}`);
+    //label of moving
+    const tooltip = cesiumViewer.entities.add({
+      label: {
+        show: false,
+        showBackground: true,
+        font: '14px monospace',
+        horizontalOrigin: HorizontalOrigin.LEFT,
+        verticalOrigin: VerticalOrigin.TOP,
+        pixelOffset: new Cartesian2(15, 0),
+      },
+    });
 
-                    const handler = new ScreenSpaceEventHandler(scene.canvas);
+    //scene -render screen
+    const scene = cesiumViewer.scene;
 
-                    let myEllipse;
+    console.log(`scene = ${scene}`);
 
-                    //mouse move
-                    handler.setInputAction((movement) => {
-                                const cartesian = convert.convertSceneCoordinatesToCartesian(
-                                    movement.endPosition,
-                                    cesiumViewer
-                                );
+    console.log(`canvas = ${scene.canvas}`);
 
-                                const strs = convert.convertCartesian2DegreesString(cartesian);
+    const handler = new ScreenSpaceEventHandler(scene.canvas);
 
-                                //setMoving({ lon: strs[0], lat: strs[1] });
-                                const validMoving = Array.isArray(strs) && strs.length === 2;
+    let myEllipse;
 
-                                tooltip.label.show = validMoving;
+    //mouse move
+    handler.setInputAction((movement) => {
+      const cartesian = convert.convertSceneCoordinatesToCartesian(
+        movement.endPosition,
+        cesiumViewer
+      );
 
-                                if (validMoving) {
-                                    tooltip.position = cartesian;
-                                    /*new Cartesian3(
+      const strs = convert.convertCartesian2DegreesString(cartesian);
+
+      //setMoving({ lon: strs[0], lat: strs[1] });
+      const validMoving = Array.isArray(strs) && strs.length === 2;
+
+      tooltip.label.show = validMoving;
+
+      if (validMoving) {
+        tooltip.position = cartesian;
+        /*new Cartesian3(
                                                                                                      cartesian.x,
                                                                                                      cartesian.y,
                                                                                                      0
                                                                                                    );*/
-                                    tooltip.label.text =
-                                        `Lon: ${`   ${strs[0]}`.slice(-7)}\u00B0` +
+        tooltip.label.text =
+          `Lon: ${`   ${strs[0]}`.slice(-7)}\u00B0` +
           `\nLat: ${`   ${strs[1]}`.slice(-7)}\u00B0`;
       }
 
