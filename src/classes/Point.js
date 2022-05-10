@@ -8,6 +8,25 @@ export default class MyPoint {
         this.coordsType = coordsType;
         this.indices = new Map();
         this.distance = null;
+
+        this.referencePoint = null;
+        this.squaredDistanceFromPoint = null;
+    }
+
+    squaredDistance(refPoint = null) {
+        if (refPoint !== this.referencePoint) {
+            this.referencePoint = refPoint;
+
+            if (!this.referencePoint)
+                this.referencePoint = new MyPoint(0, 0);
+
+            const dx = this.coordX - refPoint.coordX;
+            const dy = this.coordY - refPoint.coordY;
+
+            this.squaredDistanceFromPoint = dx * dx + dy * dy;
+        }
+
+        return this.squaredDistanceFromPoint;
     }
 
     get x() {
@@ -30,5 +49,7 @@ export default class MyPoint {
         if (index === 1) return this.coordX;
 
         if (index === 2) return this.coordY;
+
+        if (index === 3) return this.squaredDistance();
     };
 }
