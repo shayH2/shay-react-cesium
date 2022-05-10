@@ -17,11 +17,11 @@ export default class MyPoint {
         if (refPoint !== this.referencePoint || !this.squaredDistanceFromPoint) {
             this.referencePoint = refPoint;
 
-            if (!this.referencePoint)
-                this.referencePoint = new MyPoint(0, 0);
+            if (!refPoint)
+                refPoint = new MyPoint(0, 0);
 
-            const dx = this.coordX - this.referencePoint.coordX;
-            const dy = this.coordY - this.referencePoint.coordY;
+            const dx = this.coordX - refPoint.coordX;
+            const dy = this.coordY - refPoint.coordY;
 
             this.squaredDistanceFromPoint = dx * dx + dy * dy;
         }

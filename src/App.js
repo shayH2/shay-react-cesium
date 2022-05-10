@@ -135,7 +135,7 @@ const App = ({ title }) => {
                                     },
                                 });
 
-                                if (true)
+                                if (false)
                                     utils.myEllipse = cesiumViewer.entities.add({
                                         position: cartesianPoint,
                                         label: {
@@ -238,7 +238,7 @@ const App = ({ title }) => {
       ////////const found = new Map(); //points that found
       ////////search.naiveSearch(pointsArray, found, degs, 100, 1, 1); //0.01);
 
-      const coordIndex = 3;
+      const coordIndex = 2;
 
       const found = searchBinary.searchPointsArray(
         arrMap,
