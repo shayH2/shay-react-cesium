@@ -14,14 +14,14 @@ export default class MyPoint {
     }
 
     squaredDistance(refPoint = null) {
-        if (refPoint !== this.referencePoint) {
+        if (refPoint !== this.referencePoint || !this.squaredDistanceFromPoint) {
             this.referencePoint = refPoint;
 
             if (!this.referencePoint)
                 this.referencePoint = new MyPoint(0, 0);
 
-            const dx = this.coordX - refPoint.coordX;
-            const dy = this.coordY - refPoint.coordY;
+            const dx = this.coordX - this.referencePoint.coordX;
+            const dy = this.coordY - this.referencePoint.coordY;
 
             this.squaredDistanceFromPoint = dx * dx + dy * dy;
         }
