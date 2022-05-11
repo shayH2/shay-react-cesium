@@ -297,6 +297,27 @@ const sqrt = (num) => {
     return approx;
 };
 
+const groupByDistance = (pointsArray, width) => {
+    const arr = [];
+
+    let start = null;
+
+    for (let i = 0; i < pointsArray.length; i++) {
+        const current = pointsArray[i];
+
+        if (!start)
+            start = current;
+
+        if (current.getCoord(3) - start.getCoord(3) > width) {
+            arr.push(i);
+
+            start = null;
+        }
+    }
+
+    return arr;
+};
+
 // entity.position = cartesian;
 // entity.label.show = true;
 // entity.text = text;
@@ -306,6 +327,7 @@ export default {
     getDummyPointsArray,
     convexHull,
     pointInPolygon,
+    groupByDistance
 };
 
 const CoordsImage = 1;
