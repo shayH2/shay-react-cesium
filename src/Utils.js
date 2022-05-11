@@ -298,6 +298,8 @@ const sqrt = (num) => {
 };
 
 const groupByDistance = (pointsArray, width) => {
+    width *= width;
+
     const arr = [];
 
     let start = null;
@@ -308,7 +310,12 @@ const groupByDistance = (pointsArray, width) => {
         if (!start)
             start = current;
 
-        if (current.getCoord(3) - start.getCoord(3) > width) {
+        const distStart = start.getCoord(3);
+        const distCurrent = current.getCoord(3);
+
+        const subtraction = distCurrent - distStart;
+
+        if (subtraction > width) {
             arr.push(i);
 
             start = null;

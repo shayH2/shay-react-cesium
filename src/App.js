@@ -20,6 +20,7 @@ import {
   HorizontalOrigin,
   VerticalOrigin,
   PinBuilder,
+  PolylineGlowMaterialProperty
 } from 'cesium';
 //import { Cesium } from cesium-react;
 import '../node_modules/cesium/Build/Cesium/Widgets/widgets.css';
@@ -102,36 +103,41 @@ const App = ({ title }) => {
       3
     );
 
-    const groups = utils.groupByDistance(pointsArrayCoord3, 0.1);
+    const groups = utils.groupByDistance(pointsArrayCoord3, 8.85);
 
-    /*
-    let first = 0;
+    if (false && Array.isArray(groups) && groups.length > 0) {
+      let first = 0;
 
-    for (let i = 0; groups.length; i++) {
-      const last = groups[i];
+      for (let i = 0; i < groups.length; i++) {
+        const last = groups[i];
 
-      const part = pointsArrayCoord3.slice(first, last);
+        const part = pointsArrayCoord3.slice(first, last);
 
-      const part0 = Array(part.length * 2).fill(null);
+        first = last;
 
-      let j0 = 0;
+        const part0 = Array(part.length * 2).fill(null);
 
-      for (let j = 0; j < part.length; j++) {
-        part0[j0++] = part[j].x;
-        part0[j0++] = part[j].y;
+        let j0 = 0;
+
+        for (let j = 0; j < part.length; j++) {
+          part0[j0++] = part[j].x;
+          part0[j0++] = part[j].y;
+        }
+
+        const glowingLine = cesiumViewer.entities.add({
+          name: 'Glowing blue line on the surface',
+          polyline: {
+            positions: Cartesian3.fromDegreesArray(part0),
+            width: 10,
+            material: new PolylineGlowMaterialProperty({
+              glowPower: 0.2,
+              taperPower: 0.5,
+              color: Color.CORNFLOWERBLUE
+            })
+          }
+        });
       }
-
-      const polyline = cesiumViewer.entities.add({
-        polyline: {
-          hierarchy: Cartesian3.fromDegreesArray(part0),
-          height: 0,
-          material: Color.YELLOWGREEN.withAlpha(0.01),
-          outline: true,
-          outlineColor: Color.RED,
-        },
-      });
     }
-    */
 
     arrMap.set(1, pointsArrayCoord1);
     arrMap.set(2, pointsArrayCoord2);
