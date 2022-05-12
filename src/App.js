@@ -106,35 +106,35 @@ const App = ({ title }) => {
     const groups = utils.groupByDistance(pointsArrayCoord3, 8.85);
 
     if (false && Array.isArray(groups) && groups.length > 0) {
-      let first = 0;
+      let refPoint = pointsArrayCoord3[0].referencePoint;
+
+      if (!refPoint)
+        refPoint = new MyPoint(0, 0);
+
+      const cartesianPoint = Cartesian3.fromDegrees(
+        refPoint.x,
+        refPoint.y
+      );
 
       for (let i = 0; i < groups.length; i++) {
         const last = groups[i];
 
-        const part = pointsArrayCoord3.slice(first, last);
+        const max = pointsArrayCoord3[last];
 
-        first = last;
+        let dist = utils.sqrt(max.getCoord(3));
 
-        const part0 = Array(part.length * 2).fill(null);
+        dist *= utils.getOneDegreeInmeters();
 
-        let j0 = 0;
-
-        for (let j = 0; j < part.length; j++) {
-          part0[j0++] = part[j].x;
-          part0[j0++] = part[j].y;
-        }
-
-        const glowingLine = cesiumViewer.entities.add({
-          name: 'Glowing blue line on the surface',
-          polyline: {
-            positions: Cartesian3.fromDegreesArray(part0),
-            width: 10,
-            material: new PolylineGlowMaterialProperty({
-              glowPower: 0.2,
-              taperPower: 0.5,
-              color: Color.CORNFLOWERBLUE
-            })
-          }
+        const aaa = cesiumViewer.entities.add({
+          position: cartesianPoint,
+          ellipse: {
+            semiMinorAxis: dist,
+            semiMajorAxis: dist,
+            material: Color.BLUE.withAlpha(0.1),
+            outline: true,
+            outlineColor: Color.OLIVEDRAB,
+            outlineWidth: 10
+          },
         });
       }
     }

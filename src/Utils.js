@@ -1,6 +1,6 @@
 'use strict';
 
-import { Cartographic, LabelStyle, Math } from 'cesium';
+import { Cartographic, LabelStyle, Math, Cartesian3 } from 'cesium';
 
 import convert from './classes/Conversions';
 import MyPoint from './classes/Point';
@@ -297,6 +297,22 @@ const sqrt = (num) => {
     return approx;
 };
 
+let oneDegreeInMeters;
+
+const getOneDegreeInmeters = () => {
+    if (!oneDegreeInMeters) {
+        const point0 = Cartesian3.fromDegrees(0, 0);
+        const point1 = Cartesian3.fromDegrees(0, 0);
+
+        const dx = point0.x - point1.x;
+        const dy = point0.y - point1.y;
+
+        oneDegreeInMeters = sqrt(dx * dx + dy * dy);
+    }
+
+    return oneDegreeInMeters;
+};
+
 const groupByDistance = (pointsArray, width) => {
     width *= width;
 
@@ -334,7 +350,9 @@ export default {
     getDummyPointsArray,
     convexHull,
     pointInPolygon,
-    groupByDistance
+    groupByDistance,
+    getOneDegreeInmeters,
+    sqrt
 };
 
 const CoordsImage = 1;
