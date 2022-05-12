@@ -1,10 +1,10 @@
 const path = require('path');
 const webpack = require('webpack');
-const CopyPlugin = require("copy-webpack-plugin");
+const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   entry: path.resolve(__dirname, './src/index.js'),
-  devtool: "eval-cheap-module-source-map",
+  devtool: 'eval-cheap-module-source-map',
   module: {
     rules: [
       {
@@ -14,7 +14,12 @@ module.exports = {
       },
       {
         test: /\.css$/i,
-        use: ["style-loader", "css-loader"],
+        use: ['style-loader', 'css-loader'],
+      },
+      {
+        test: /\.json$/,
+        exclude: /(node_modules)/,
+        loader: 'json-loader',
       },
     ],
   },
@@ -25,14 +30,13 @@ module.exports = {
     path: path.resolve(__dirname, './dist'),
     filename: 'bundle.js',
   },
-  plugins: [new webpack.HotModuleReplacementPlugin(),
+  plugins: [
+    new webpack.HotModuleReplacementPlugin(),
     new CopyPlugin({
       patterns: [
-        { from: "node_modules/cesium/Build/Cesium", to: "cesium" },
-        
+        { from: 'node_modules/cesium/Build/Cesium', to: 'cesium' },
       ],
     }),
-  
   ],
   devServer: {
     static: path.resolve(__dirname, './dist'),

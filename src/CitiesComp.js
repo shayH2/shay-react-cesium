@@ -40,20 +40,22 @@ const CitiesComp = (props) => {
   ];
 
   useLayoutEffect(() => {
-  for (let i = 0; i < cities.length; i++)
-    mapCities.set(i + 1, cities[i]);
+    for (let i = 0; i < cities.length; i++)
+      mapCities.set(i + 1, cities[i]);
 
     setCity(mapCities.keys().next().value);
   }, []);
 
-  const cityPicked = (event) => {
-    const pickedCity = event.target.value;
+  const cityPicked = (pickedCity) => {
+    if (pickedCity) {
+      //const pickedCity = event.target.value;
 
-    setCity(pickedCity);
+      setCity(pickedCity.id);
 
-    const pCity = mapCities.get(pickedCity);
+      //const pCity = mapCities.get(pickedCity);
 
-    props.callback(pickedCity, pCity.region);
+      props.callback(pickedCity.id, pickedCity.region);
+    }
   };
 
   const getCitiesArray = () => {
@@ -75,7 +77,22 @@ const CitiesComp = (props) => {
   return (
     <div style={{ marginLeft: '0%', marginTop: '60px' }}>
       <h3>Choose a city</h3>
-      <Select
+      <Autocomplete
+        options={getCitiesArray()}
+        getOptionLabel={(option) =>
+          option ? `(${option.id}) ${option.name}` : ''
+        }
+        onChange={(event, value) => cityPicked(value)} // prints the selected value
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label="City"
+            variant="outlined"
+            fullWidth
+          />
+        )}
+      />
+      {/* <Select
         labelId="demo-simple-select-label"
         id="demo-simple-select"
         value={city}
@@ -87,7 +104,7 @@ const CitiesComp = (props) => {
             {`(${elem.id}) ${elem.name}`}
           </MenuItem>
         ))}
-      </Select>
+      </Select> */}
     </div>
   );
 };
