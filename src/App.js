@@ -103,39 +103,51 @@ const App = ({ title }) => {
       3
     );
 
-    const groups = utils.groupByDistance(pointsArrayCoord3, 8.85);
+    const groups = utils.groupByDistance(pointsArrayCoord3, 4.85);
 
-    if (false && Array.isArray(groups) && groups.length > 0) {
+    if (Array.isArray(groups) && groups.length > 0) {
       let refPoint = pointsArrayCoord3[0].referencePoint;
 
       if (!refPoint)
         refPoint = new MyPoint(0, 0);
 
-      const cartesianPoint = Cartesian3.fromDegrees(
-        refPoint.x,
-        refPoint.y
-      );
-
       for (let i = 0; i < groups.length; i++) {
-        const last = groups[i] - 1;
+        const lastInGroup = groups[i] - 1;
 
-        const max = pointsArrayCoord3[last];
+        if (lastInGroup >= 0) {
+          const maxInGroup = pointsArrayCoord3[lastInGroup];
+          const squaredDistance = maxInGroup.getCoord(3);
 
-        let dist = utils.sqrt(max.getCoord(3));
+          let dx = roi.right - refPoint.x;
+          let dx2 = dx * dx;
+          let dy2 = squaredDistance - dx2;
+          let dy = utils.sqrt(dy2);
+          const y1 = refPoint.y + dy;
+          dx = roi.left - refPoint.x;
+          dx2 = dx * dx;
+          dy2 = squaredDistance - dx2;
+          dy = utils.sqrt(dy2);
+          const y2 = refPoint.y + dy;
 
-        dist *= utils.getOneDegreeInMeters();
+          const arr = [6];
 
-        const aaa = cesiumViewer.entities.add({
-          position: cartesianPoint,
-          ellipse: {
-            semiMinorAxis: dist,
-            semiMajorAxis: dist,
-            material: Color.BLUE.withAlpha(0.1),
-            outline: true,
-            outlineColor: Color.OLIVEDRAB,
-            outlineWidth: 10
-          },
-        });
+          arr[0] = roi.right;
+          arr[1] = y1;
+          arr[2] = maxInGroup.x;
+          arr[3] = maxInGroup.y;
+          arr[4] = roi.left;
+          arr[5] = y2;
+
+          const redLine = cesiumViewer.entities.add({
+            name: "Red line on terrain",
+            polyline: {
+              positions: Cartesian3.fromDegreesArray(arr),
+              width: 2,
+              material: Color.RED,
+              clampToGround: true,
+            },
+          });
+        }
       }
     }
 
