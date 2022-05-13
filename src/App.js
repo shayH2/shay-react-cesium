@@ -132,11 +132,11 @@ const App = ({ title }) => {
           const arr = [6];
 
           arr[0] = roi.right;
-          arr[1] = y1;
+          arr[1] = utils.max(utils.min(y1, roi.top), roi.bottom);
           arr[2] = maxInGroup.x;
           arr[3] = maxInGroup.y;
           arr[4] = roi.left;
-          arr[5] = y2;
+          arr[5] = utils.max(utils.min(y2, roi.top), roi.bottom);
 
           const redLine = cesiumViewer.entities.add({
             name: "Red line on terrain",
