@@ -1,4 +1,5 @@
 'use strict';
+import TextField from '@material-ui/core/TextField';
 
 import React, { useState } from 'react';
 
@@ -24,12 +25,21 @@ const CoordsFormComp = (props) => {
   };
 
   return (
-    <div>
-      Longtiude:
-      <input type="text" value={coords.lon} onChange={setLon}></input>
-      <br />
-      Latitude:
-      <input type="text" value={coords.lat} onChange={setLat}></input>
+    <div class="class-coords">
+      <TextField
+        label="Longtiude"
+        variant="outlined"
+        fullWidth
+        value={coords.lon}
+        onChange={setLon}
+      />
+      <TextField
+        label="Latitude"
+        variant="outlined"
+        fullWidth
+        value={coords.lat}
+        onChange={setLat}
+      />
       <br />
       <input
         type="button"

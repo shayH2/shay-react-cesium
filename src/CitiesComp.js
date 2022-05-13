@@ -85,6 +85,9 @@ const CitiesComp = (props) => {
         onChange={(event, value) => cityPicked(value)} // prints the selected value
         renderInput={(params) => (
           <TextField
+            inputProps={{
+              readonly: true,
+            }}
             {...params}
             label="City"
             variant="outlined"
