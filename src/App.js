@@ -117,13 +117,13 @@ const App = ({ title }) => {
       );
 
       for (let i = 0; i < groups.length; i++) {
-        const last = groups[i];
+        const last = groups[i] - 1;
 
         const max = pointsArrayCoord3[last];
 
         let dist = utils.sqrt(max.getCoord(3));
 
-        dist *= utils.getOneDegreeInmeters();
+        dist *= utils.getOneDegreeInMeters();
 
         const aaa = cesiumViewer.entities.add({
           position: cartesianPoint,

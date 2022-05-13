@@ -299,10 +299,10 @@ const sqrt = (num) => {
 
 let oneDegreeInMeters;
 
-const getOneDegreeInmeters = () => {
+const getOneDegreeInMeters = () => {
     if (!oneDegreeInMeters) {
         const point0 = Cartesian3.fromDegrees(0, 0);
-        const point1 = Cartesian3.fromDegrees(0, 0);
+        const point1 = Cartesian3.fromDegrees(1, 1);
 
         const dx = point0.x - point1.x;
         const dy = point0.y - point1.y;
@@ -351,7 +351,7 @@ export default {
     convexHull,
     pointInPolygon,
     groupByDistance,
-    getOneDegreeInmeters,
+    getOneDegreeInMeters,
     sqrt
 };
 
