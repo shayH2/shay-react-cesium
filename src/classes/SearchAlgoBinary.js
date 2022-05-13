@@ -111,11 +111,11 @@ const sequentialBypass = (arr, searchPoint, relatedPoint, coordIndex) => {
 }
 
 
-const searchSequential = (arr, searchPoint, foundPoint, coordIndex, number = 0) => {
-    let foundArray = [foundPoint];
+const searchSequential = (arr, searchPoint, pointFound, coordIndex, number = 0) => {
+    let foundArray = [pointFound];
 
-    let up = foundPoint.indices[coordIndex] + 1;
-    let down = foundPoint.indices[coordIndex] - 1;
+    let up = pointFound.indices[coordIndex] + 1;
+    let down = pointFound.indices[coordIndex] - 1;
 
     let notFoundUp = false;
     let notFoundDown = false;
@@ -160,7 +160,7 @@ const searchPointsArray = (arrMap, coordIndex, searchPoint, number = 0) => {
     const pointEnd = arr[arr.length - 1];
 
     return searchPointsArrayImplementation(arr, coordIndex, searchPoint, pointBegin, pointEnd, number);
-}
+};
 
 const searchPointsArrayImplementation = (arr, coordIndex, searchPoint, pointBegin, pointEnd, number = 0) => {
     if (!searchPoint)
@@ -246,6 +246,70 @@ const searchPointsArrayImplementation = (arr, coordIndex, searchPoint, pointBegi
                 return result;
         }
     }
+};
+
+const searchPointsArrayForMinDistance = (arrMap, coordIndex, searchPoint) => {
+    const arr = arrMap.get(coordIndex);
+
+    const pointBegin = arr[0];
+    const pointEnd = arr[arr.length - 1];
+
+    return searchPointsArrayForMinDistanceImplementation(arr, coordIndex, searchPoint, pointBegin, pointEnd, null);
+};
+
+const searchPointsArrayForMinDistanceImplementation = (arr, coordIndex, searchPoint, pointBegin, pointEnd, pointFound) => {
+    if (!searchPoint)
+        return;
+
+    let result = null;
+
+    if (pointEnd.indices[coordIndex] < pointBegin.indices[coordIndex])
+        return null;
+
+    const middle = Math.floor((pointBegin.indices[coordIndex] + pointEnd.indices[coordIndex]) / 2);
+
+    const pointMiddle = arr[middle];
+
+    pointMiddle.distance = xDistance(searchPoint, pointMiddle, coordIndex);
+
+    if (!pointFound || Math.abs(pointMiddle.distance) < pointFound.distance)
+        pointFound = pointMiddle;
+
+    pointBegin.distance = xDistance(searchPoint, pointBegin, coordIndex);
+
+    if (!pointFound || Math.abs(pointBegin.distance) < pointFound.distance)
+        pointFound = pointBegin;
+
+    pointEnd.distance = xDistance(searchPoint, pointEnd, coordIndex);
+
+    if (!pointFound || Math.abs(pointEnd.distance) < pointFound.distance)
+        pointFound = pointEnd;
+
+    if (pointMiddle.indices[coordIndex] < pointEnd.indices[coordIndex]) {
+        const productUpper = pointMiddle.distance * pointEnd.distance;
+
+        if (productUpper < 0) {
+            const indexUp = pointMiddle.indices[coordIndex] + 1;
+            const pointBeginNew = arr[indexUp];
+            pointBeginNew.indices[coordIndex] = pointMiddle.indices[coordIndex] + 1; //TODO:
+
+            pointFound = searchPointsArrayForMinDistanceImplementation(arr, coordIndex, searchPoint, pointBeginNew, pointEnd, pointFound);
+        }
+    }
+
+    if (pointMiddle.indices[coordIndex] > pointBegin.indices[coordIndex]) {
+        const productLower = pointBegin.distance * pointMiddle.distance;
+
+        if (productLower < 0) {
+            const indexDown = pointMiddle.indices[coordIndex] - 1;
+            const pointEndNew = arr[indexDown];
+            pointEndNew.indices[coordIndex] = indexDown; //TODO:
+
+            pointFound = searchPointsArrayForMinDistanceImplementation(arr, coordIndex, searchPoint, pointBegin, pointEndNew, pointFound);
+        }
+    }
+
+    return pointFound;
 }
 
-export default { searchPointsArray };
+export default { searchPointsArray, searchPointsArrayForMinDistance };

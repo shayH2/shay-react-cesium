@@ -25,7 +25,7 @@ const CoordsFormComp = (props) => {
   };
 
   return (
-    <div class="class-coords">
+    <div className="class-coords">
       <TextField
         label="Longtiude"
         variant="outlined"

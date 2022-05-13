@@ -105,7 +105,7 @@ const App = ({ title }) => {
 
     const groups = utils.groupByDistance(pointsArrayCoord3, 4.85);
 
-    if (Array.isArray(groups) && groups.length > 0) {
+    if (false && Array.isArray(groups) && groups.length > 0) {
       let refPoint = pointsArrayCoord3[0].referencePoint;
 
       if (!refPoint)
@@ -430,10 +430,6 @@ const App = ({ title }) => {
 
     const arr = arrMap.get(coordIndex);
 
-    const found = [];
-
-    let i = 0;
-
     const foundPoint = searchBinary.searchPointsArray(
       arrMap,
       coordIndex,
@@ -441,12 +437,52 @@ const App = ({ title }) => {
       1
     );
 
-    while (i < arr.length) {
-      const point = arr[i++];
+    const pointFound = searchBinary.searchPointsArrayForMinDistance(arrMap, coordIndex, region.center);
 
-      if (utils.pointInPolygon(point, searchPolygon, region))
+    const found = [];
+
+    for (let i = 0; i < arr.length; i++) {
+      const point = arr[i];
+
+      const inPolygon = utils.pointInPolygon(point, searchPolygon, region);
+
+      if (inPolygon)
         found.push(point);
     }
+
+    /*
+    const found = [pointFound];
+
+    let i = pointFound.indices[coordIndex] + 1;
+
+    let notInPolygon = false;
+
+    while (!notInPolygon && i < arr.length) {
+      const point = arr[i++];
+
+      const inPolygon = utils.pointInPolygon(point, searchPolygon, region);
+
+      if (inPolygon)
+        found.push(point);
+
+      notInPolygon = !inPolygon;
+    }
+
+    i = pointFound.indices[coordIndex] - 1;
+
+    notInPolygon = false;
+
+    while (!notInPolygon && i >= 0) {
+      const point = arr[i--];
+
+      const inPolygon = utils.pointInPolygon(point, searchPolygon, region);
+
+      if (inPolygon)
+        found.push(point);
+
+      notInPolygon = !inPolygon;
+    }
+    */
 
     if (found.length > 0) {
       const fa = Array(found.length).fill(null);
