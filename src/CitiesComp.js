@@ -14,15 +14,15 @@ const CitiesComp = (props) => {
   // TODO: to be fetched from db
   const cities = [
     {
-      name: 'Petah Tikva (black hole)',
+      name: 'Petah Tikva',
       region: new regionOfInterest(34.86, 32.1, 34.9, 32.07),
     },
     {
-      name: 'Givat Shmuel (millionaires)',
+      name: 'Givat Shmuel',
       region: new regionOfInterest(34.85, 32.09, 34.86, 32.07),
     },
     {
-      name: 'Bnei Brak (pinguins)',
+      name: 'Bnei Brak',
       region: new regionOfInterest(34.82, 32.1, 34.85, 32.07),
     },
     {
