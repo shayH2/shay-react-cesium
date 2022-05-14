@@ -1,5 +1,6 @@
 'use strict';
 import TextField from '@material-ui/core/TextField';
+import Grid from '@material-ui/core/Grid';
 
 import React, { useState } from 'react';
 
@@ -25,8 +26,12 @@ const CoordsFormComp = (props) => {
   };
 
   return (
-    <div class="class-coords">
+    <div className="class-coords">
       <TextField
+        inputProps={{
+          className: 'class-coord',
+          pattern: '[a-z]{1,15}',
+        }}
         label="Longtiude"
         variant="outlined"
         fullWidth
@@ -34,6 +39,10 @@ const CoordsFormComp = (props) => {
         onChange={setLon}
       />
       <TextField
+        inputProps={{
+          className: 'class-coord',
+          pattern: '[a-r]{4,9}',
+        }}
         label="Latitude"
         variant="outlined"
         fullWidth

@@ -20,7 +20,7 @@ import {
   HorizontalOrigin,
   VerticalOrigin,
   PinBuilder,
-  PolylineGlowMaterialProperty
+  PolylineGlowMaterialProperty,
 } from 'cesium';
 //import { Cesium } from cesium-react;
 import '../node_modules/cesium/Build/Cesium/Widgets/widgets.css';
@@ -108,8 +108,7 @@ const App = ({ title }) => {
     if (false && Array.isArray(groups) && groups.length > 0) {
       let refPoint = pointsArrayCoord3[0].referencePoint;
 
-      if (!refPoint)
-        refPoint = new MyPoint(0, 0);
+      if (!refPoint) refPoint = new MyPoint(0, 0);
 
       const cartesianPoint = Cartesian3.fromDegrees(
         refPoint.x,
@@ -133,7 +132,7 @@ const App = ({ title }) => {
             material: Color.BLUE.withAlpha(0.1),
             outline: true,
             outlineColor: Color.OLIVEDRAB,
-            outlineWidth: 10
+            outlineWidth: 10,
           },
         });
       }
@@ -482,10 +481,9 @@ const App = ({ title }) => {
         ></div>
         <div style={{ width: '20%', float: 'right' }}>
           <CitiesComp callback={cityPicked} />
+
+          <CoordsFormComp callback={setCoordsByForm} />
         </div>
-      </div>
-      <div>
-        <CoordsFormComp callback={setCoordsByForm} />
       </div>
     </div>
   );
