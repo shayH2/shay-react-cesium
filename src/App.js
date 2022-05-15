@@ -432,13 +432,44 @@ const App = ({ title }) => {
 
     const arr = arrMap.get(coordIndex);
 
-    const foundPoint = searchBinary.searchPointsArray(
+    const regionX = (roi.right - roi.left) / 2;
+    const regionY = (roi.top - roi.bottom) / 2;
+
+    let radius1 = regionX, radius2 = regionY;
+
+    if (radius1 > radius2) {
+      radius1 = regionY;
+      radius2 = regionX;
+    }
+
+    const threshold1 = {
+      Distance: radius1,
+      Squared: radius1 * radius1
+    };
+
+    const threshold2 = {
+      Distance: radius2,
+      Squared: radius2 * radius2
+    };
+
+    let foundPoint = searchBinary.searchPointsArray(
       arrMap,
       coordIndex,
       region.center,
       1,
-      roi
+      roi,
+      threshold1
     );
+
+    if (!foundPoint)
+      foundPoint = searchBinary.searchPointsArray(
+        arrMap,
+        coordIndex,
+        region.center,
+        1,
+        roi,
+        threshold2
+      );
 
     somePoint && cesiumViewer.entities.remove(somePoint);
 
