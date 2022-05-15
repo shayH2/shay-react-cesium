@@ -428,9 +428,9 @@ const App = ({ title }) => {
 
     const searchPolygon = region.toPolygon();
 
-    const coordIndex = 1;
+    const coordIndex = 1;//3;
 
-    const arr = arrMap.get(coordIndex);
+    //const arr = arrMap.get(coordIndex);
 
     const regionX = (region.right - region.left) / 2;
     const regionY = (region.top - region.bottom) / 2;
@@ -506,7 +506,7 @@ const App = ({ title }) => {
       const pinBuilder0 = new PinBuilder();
 
       Promise.resolve(
-        pinBuilder0.fromMakiIconId('hospital', Color.RED, 48)
+        pinBuilder0.fromMakiIconId('hospital', Color.BLUE, 48)
       ).then(function (canvas) {
         somePoint = cesiumViewer.entities.add({
           position: cartesianPoint,
@@ -521,6 +521,7 @@ const App = ({ title }) => {
 
     //const pointFound = searchBinary.searchPointsArrayForMinDistance(arrMap, coordIndex, region.center);
 
+    /*
     let found = [];
 
     for (let i = 0; i < arr.length; i++) {
@@ -533,40 +534,72 @@ const App = ({ title }) => {
     }
 
     found = [];
+*/
 
-    /*
-    const found = [pointFound];
+let found = [];
 
-    let i = pointFound.indices[coordIndex] + 1;
+const regionWidth = region.right - region.left;
+const regionHeight = region.top - region.bottom;
 
-    let notInPolygon = false;
+let coordIndex0 = 1;
+let boundStart = region.left;
+let boundEnd = region.right;
 
-    while (!notInPolygon && i < arr.length) {
+if (regionWidth < regionHeight){
+coordIndex0 = 2;
+ boundStart = region.bottom;
+ boundEnd = region.top;
+}
+
+const arr = arrMap.get(coordIndex0);
+
+const pointFound0 = Array.isArray(foundPoint) && foundPoint.length > 0
+? foundPoint[0] 
+: arrMap.get(coordIndex0)[0];
+
+    let i = pointFound0.indices[coordIndex0];
+
+    let outOfBounds = false;
+
+    while (!outOfBounds && i < arr.length) {
       const point = arr[i++];
 
+      const coord = point.getCoord(coordIndex0);
+
+      const inRegion = coord > boundStart && coord < boundEnd;
+
+      if (inRegion)
+      {
       const inPolygon = utils.pointInPolygon(point, searchPolygon, region);
 
       if (inPolygon)
         found.push(point);
+      }
 
-      notInPolygon = !inPolygon;
+      outOfBounds = !inRegion;
     }
 
-    i = pointFound.indices[coordIndex] - 1;
+    i = pointFound0.indices[coordIndex0] - 1;
 
-    notInPolygon = false;
+    outOfBounds = false;
 
-    while (!notInPolygon && i >= 0) {
+    while (!outOfBounds && i >= 0) {
       const point = arr[i--];
 
+      const coord = point.getCoord(coordIndex0);
+
+      const inRegion = coord > boundStart && coord < boundEnd;
+
+      if (inRegion)
+      {
       const inPolygon = utils.pointInPolygon(point, searchPolygon, region);
 
       if (inPolygon)
         found.push(point);
+      }
 
-      notInPolygon = !inPolygon;
+      outOfBounds = !inRegion;
     }
-    */
 
     if (found.length > 0) {
       const fa = Array(found.length).fill(null);
