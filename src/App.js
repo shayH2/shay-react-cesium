@@ -29,6 +29,8 @@ import CitiesComp from './CitiesComp';
 
 let cesiumViewer;
 
+let somePoint;
+
 //latitude(width) longitude(length)
 
 const App = ({ title }) => {
@@ -39,6 +41,9 @@ const App = ({ title }) => {
 
   let foundEntities = [];
   let foundPolygon;
+
+  //israel
+  const roi = new regionOfInterest(33.9, 32.87, 35.55, 29.5);
 
   useLayoutEffect(() => {
     Ion.defaultAccessToken =
@@ -59,9 +64,6 @@ const App = ({ title }) => {
     cesiumViewer.infoBox.frame.src = 'about:blank';
 
     const numOfPoints = 500;
-
-    //israel
-    const roi = new regionOfInterest(33.9, 32.87, 35.55, 29.5);
 
     const centerPoint = roi.center;
 
@@ -434,12 +436,39 @@ const App = ({ title }) => {
       arrMap,
       coordIndex,
       region.center,
-      1
+      1,
+      roi
     );
 
-    const pointFound = searchBinary.searchPointsArrayForMinDistance(arrMap, coordIndex, region.center);
+    somePoint && cesiumViewer.entities.remove(somePoint);
 
-    const found = [];
+    if (foundPoint) {
+      const point = foundPoint[0];
+
+      const cartesianPoint = Cartesian3.fromDegrees(
+        point.x,
+        point.y
+      );
+
+      const pinBuilder0 = new PinBuilder();
+
+      Promise.resolve(
+        pinBuilder0.fromMakiIconId('hospital', Color.RED, 48)
+      ).then(function (canvas) {
+        somePoint = cesiumViewer.entities.add({
+          position: cartesianPoint,
+
+          billboard: {
+            image: canvas.toDataURL(),
+            verticalOrigin: VerticalOrigin.BOTTOM,
+          },
+        });
+      });
+    }
+
+    //const pointFound = searchBinary.searchPointsArrayForMinDistance(arrMap, coordIndex, region.center);
+
+    let found = [];
 
     for (let i = 0; i < arr.length; i++) {
       const point = arr[i];
@@ -449,6 +478,8 @@ const App = ({ title }) => {
       if (inPolygon)
         found.push(point);
     }
+
+    found = [];
 
     /*
     const found = [pointFound];
