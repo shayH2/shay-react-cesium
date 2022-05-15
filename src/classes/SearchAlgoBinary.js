@@ -111,8 +111,11 @@ const sequentialBypass = (arr, searchPoint, relatedPoint, coordIndex) => {
 }
 
 
-const searchSequential = (arr, searchPoint, pointFound, coordIndex, number = 0) => {
-    let foundArray = [pointFound];
+const searchSequential = (arr, searchPoint, pointFound, coordIndex, number = 0, roi = null) => {
+    let foundArray = [];
+
+    if (!roi || roi.pointInRegion(pointFound))
+        foundArray.push(pointFound);
 
     let up = pointFound.indices[coordIndex] + 1;
     let down = pointFound.indices[coordIndex] - 1;
@@ -130,7 +133,7 @@ const searchSequential = (arr, searchPoint, pointFound, coordIndex, number = 0) 
         if (foundUp) {
             const pointDistMiddle = pointDistance(searchPoint, pointUp);
 
-            if (pointDistMiddle < threshold.Squared)
+            if (pointDistMiddle < threshold.Squared && (!roi || roi.pointInRegion(pointFound)))
                 foundArray.push(pointUp);
         }
     }
@@ -145,7 +148,7 @@ const searchSequential = (arr, searchPoint, pointFound, coordIndex, number = 0) 
         if (foundDown) {
             const pointDistMiddle = pointDistance(searchPoint, pointDown);
 
-            if (pointDistMiddle < threshold.Squared)
+            if (pointDistMiddle < threshold.Squared && (!roi || roi.pointInRegion(pointFound)))
                 foundArray.push(pointDown);
         }
     }
@@ -153,16 +156,16 @@ const searchSequential = (arr, searchPoint, pointFound, coordIndex, number = 0) 
     return foundArray;
 };
 
-const searchPointsArray = (arrMap, coordIndex, searchPoint, number = 0) => {
+const searchPointsArray = (arrMap, coordIndex, searchPoint, number = 0, roi = null) => {
     const arr = arrMap.get(coordIndex);
 
     const pointBegin = arr[0];
     const pointEnd = arr[arr.length - 1];
 
-    return searchPointsArrayImplementation(arr, coordIndex, searchPoint, pointBegin, pointEnd, number);
+    return searchPointsArrayImplementation(arr, coordIndex, searchPoint, pointBegin, pointEnd, number, roi);
 };
 
-const searchPointsArrayImplementation = (arr, coordIndex, searchPoint, pointBegin, pointEnd, number = 0) => {
+const searchPointsArrayImplementation = (arr, coordIndex, searchPoint, pointBegin, pointEnd, number = 0, roi = null) => {
     if (!searchPoint)
         return;
 
