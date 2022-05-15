@@ -352,7 +352,7 @@ export default {
     pointInPolygon,
     groupByDistance,
     getOneDegreeInMeters,
-    sqrt
+    sqrt, min, max
 };
 
 const CoordsImage = 1;

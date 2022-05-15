@@ -20,7 +20,7 @@ import {
   HorizontalOrigin,
   VerticalOrigin,
   PinBuilder,
-  PolylineGlowMaterialProperty,
+  PolylineGlowMaterialProperty
 } from 'cesium';
 //import { Cesium } from cesium-react;
 import '../node_modules/cesium/Build/Cesium/Widgets/widgets.css';
@@ -28,6 +28,8 @@ import CoordsFormComp from './CoordsFormComp';
 import CitiesComp from './CitiesComp';
 
 let cesiumViewer;
+
+let somePoint;
 
 //latitude(width) longitude(length)
 
@@ -39,6 +41,9 @@ const App = ({ title }) => {
 
   let foundEntities = [];
   let foundPolygon;
+
+  //israel
+  const roi = new regionOfInterest(33.9, 32.87, 35.55, 29.5);
 
   useLayoutEffect(() => {
     Ion.defaultAccessToken =
@@ -59,9 +64,6 @@ const App = ({ title }) => {
     cesiumViewer.infoBox.frame.src = 'about:blank';
 
     const numOfPoints = 500;
-
-    //israel
-    const roi = new regionOfInterest(33.9, 32.87, 35.55, 29.5);
 
     const centerPoint = roi.center;
 
@@ -103,38 +105,51 @@ const App = ({ title }) => {
       3
     );
 
-    const groups = utils.groupByDistance(pointsArrayCoord3, 8.85);
+    const groups = utils.groupByDistance(pointsArrayCoord3, 4.85);
 
     if (false && Array.isArray(groups) && groups.length > 0) {
       let refPoint = pointsArrayCoord3[0].referencePoint;
 
-      if (!refPoint) refPoint = new MyPoint(0, 0);
-
-      const cartesianPoint = Cartesian3.fromDegrees(
-        refPoint.x,
-        refPoint.y
-      );
+      if (!refPoint)
+        refPoint = new MyPoint(0, 0);
 
       for (let i = 0; i < groups.length; i++) {
-        const last = groups[i] - 1;
+        const lastInGroup = groups[i] - 1;
 
-        const max = pointsArrayCoord3[last];
+        if (lastInGroup >= 0) {
+          const maxInGroup = pointsArrayCoord3[lastInGroup];
+          const squaredDistance = maxInGroup.getCoord(3);
 
-        let dist = utils.sqrt(max.getCoord(3));
+          let dx = roi.right - refPoint.x;
+          let dx2 = dx * dx;
+          let dy2 = squaredDistance - dx2;
+          let dy = utils.sqrt(dy2);
+          const y1 = refPoint.y + dy;
+          dx = roi.left - refPoint.x;
+          dx2 = dx * dx;
+          dy2 = squaredDistance - dx2;
+          dy = utils.sqrt(dy2);
+          const y2 = refPoint.y + dy;
 
-        dist *= utils.getOneDegreeInMeters();
+          const arr = [6];
 
-        const aaa = cesiumViewer.entities.add({
-          position: cartesianPoint,
-          ellipse: {
-            semiMinorAxis: dist,
-            semiMajorAxis: dist,
-            material: Color.BLUE.withAlpha(0.1),
-            outline: true,
-            outlineColor: Color.OLIVEDRAB,
-            outlineWidth: 10,
-          },
-        });
+          arr[0] = roi.right;
+          arr[1] = utils.max(utils.min(y1, roi.top), roi.bottom);
+          arr[2] = maxInGroup.x;
+          arr[3] = maxInGroup.y;
+          arr[4] = roi.left;
+          arr[5] = utils.max(utils.min(y2, roi.top), roi.bottom);
+
+          const redLine = cesiumViewer.entities.add({
+            name: "Red line on terrain",
+            polyline: {
+              positions: Cartesian3.fromDegreesArray(arr),
+              width: 2,
+              material: Color.RED,
+              clampToGround: true,
+            },
+          });
+        }
       }
     }
 
@@ -417,23 +432,119 @@ const App = ({ title }) => {
 
     const arr = arrMap.get(coordIndex);
 
-    const found = [];
+    const regionX = (roi.right - roi.left) / 2;
+    const regionY = (roi.top - roi.bottom) / 2;
 
-    let i = 0;
+    let radius1 = regionX, radius2 = regionY;
 
-    const foundPoint = searchBinary.searchPointsArray(
+    if (radius1 > radius2) {
+      radius1 = regionY;
+      radius2 = regionX;
+    }
+
+    const threshold1 = {
+      Distance: radius1,
+      Squared: radius1 * radius1
+    };
+
+    const threshold2 = {
+      Distance: radius2,
+      Squared: radius2 * radius2
+    };
+
+    let foundPoint = searchBinary.searchPointsArray(
       arrMap,
       coordIndex,
       region.center,
-      1
+      1,
+      roi,
+      threshold1
     );
 
-    while (i < arr.length) {
-      const point = arr[i++];
+    if (!foundPoint)
+      foundPoint = searchBinary.searchPointsArray(
+        arrMap,
+        coordIndex,
+        region.center,
+        1,
+        roi,
+        threshold2
+      );
 
-      if (utils.pointInPolygon(point, searchPolygon, region))
+    somePoint && cesiumViewer.entities.remove(somePoint);
+
+    if (foundPoint) {
+      const point = foundPoint[0];
+
+      const cartesianPoint = Cartesian3.fromDegrees(
+        point.x,
+        point.y
+      );
+
+      const pinBuilder0 = new PinBuilder();
+
+      Promise.resolve(
+        pinBuilder0.fromMakiIconId('hospital', Color.RED, 48)
+      ).then(function (canvas) {
+        somePoint = cesiumViewer.entities.add({
+          position: cartesianPoint,
+
+          billboard: {
+            image: canvas.toDataURL(),
+            verticalOrigin: VerticalOrigin.BOTTOM,
+          },
+        });
+      });
+    }
+
+    //const pointFound = searchBinary.searchPointsArrayForMinDistance(arrMap, coordIndex, region.center);
+
+    let found = [];
+
+    for (let i = 0; i < arr.length; i++) {
+      const point = arr[i];
+
+      const inPolygon = utils.pointInPolygon(point, searchPolygon, region);
+
+      if (inPolygon)
         found.push(point);
     }
+
+    found = [];
+
+    /*
+    const found = [pointFound];
+
+    let i = pointFound.indices[coordIndex] + 1;
+
+    let notInPolygon = false;
+
+    while (!notInPolygon && i < arr.length) {
+      const point = arr[i++];
+
+      const inPolygon = utils.pointInPolygon(point, searchPolygon, region);
+
+      if (inPolygon)
+        found.push(point);
+
+      notInPolygon = !inPolygon;
+    }
+
+    i = pointFound.indices[coordIndex] - 1;
+
+    notInPolygon = false;
+
+    while (!notInPolygon && i >= 0) {
+      const point = arr[i--];
+
+      const inPolygon = utils.pointInPolygon(point, searchPolygon, region);
+
+      if (inPolygon)
+        found.push(point);
+
+      notInPolygon = !inPolygon;
+    }
+    */
 
     if (found.length > 0) {
       const fa = Array(found.length).fill(null);

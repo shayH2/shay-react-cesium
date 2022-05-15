@@ -12,6 +12,9 @@ export default class regionOfInterest {
         return new MyPoint((this.left + this.right) / 2, (this.bottom + this.top) / 2);
     }
 
+    pointInRegion = (point) =>
+        point.x > this.left && point.x < this.right && point.y > this.bottom && point.y < this.top;
+
     toPolygon = () => [
         new MyPoint(this.left, this.top),
         new MyPoint(this.right, this.top),
