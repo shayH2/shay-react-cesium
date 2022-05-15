@@ -65,9 +65,6 @@ const setDoubleIndexPoint = (point, index, distance, threshold = null) => {
     return point;
 }
 
-
-
-
 const sequentialBypass = (arr, searchPoint, relatedPoint, coordIndex, thresh, roi = null) => {
     let result = null;
 
@@ -171,6 +168,8 @@ const searchPointsArray = (arrMap, coordIndex, searchPoint, number = 0, roi = nu
 };
 
 const searchPointsArrayImplementation = (arr, coordIndex, searchPoint, pointBegin, pointEnd, thresh, number = 0, roi = null) => {
+    //alert(`thresh = ${JSON.stringify(thresh)}`);
+
     if (!searchPoint)
         return;
 
