@@ -29,7 +29,7 @@ import CitiesComp from './CitiesComp';
 
 let cesiumViewer;
 
-let somePoint;
+let somePoint, centerPoint;
 
 //latitude(width) longitude(length)
 
@@ -451,6 +451,28 @@ const App = ({ title }) => {
       Distance: radius2,
       Squared: radius2 * radius2
     };
+
+    centerPoint && cesiumViewer.entities.remove(centerPoint);
+
+    const cartesianPoint1 = Cartesian3.fromDegrees(
+      region.center.x,
+      region.center.y
+    );
+ 
+    const pinBuilder1 = new PinBuilder();
+
+    Promise.resolve(
+      pinBuilder1.fromMakiIconId('hospital', Color.GREEN, 48)
+    ).then(function (canvas) {
+      centerPoint = cesiumViewer.entities.add({
+        position: cartesianPoint1,
+
+        billboard: {
+          image: canvas.toDataURL(),
+          verticalOrigin: VerticalOrigin.BOTTOM,
+        },
+      });
+    });
 
     let foundPoint = searchBinary.searchPointsArray(
       arrMap,

@@ -68,7 +68,7 @@ const setDoubleIndexPoint = (point, index, distance, threshold = null) => {
 
 
 
-const sequentialBypass = (arr, searchPoint, relatedPoint, coordIndex, thresh) => {
+const sequentialBypass = (arr, searchPoint, relatedPoint, coordIndex, thresh, roi = null) => {
     let result = null;
 
     let i = relatedPoint.indices[coordIndex] + 1;
@@ -78,15 +78,17 @@ const sequentialBypass = (arr, searchPoint, relatedPoint, coordIndex, thresh) =>
     while (result === null && distance < thresh.Distance && i < arr.length) {
         let point0 = arr[i];
 
-        distance = xDistance(searchPoint, point0, coordIndex);
+        if (!roi || roi.pointInRegion(point0)) {
+            distance = xDistance(searchPoint, point0, coordIndex);
 
-        i++;
+            i++;
 
-        if (Math.abs(distance) < Math.abs(thresh.Distance)) {
-            const squared = pointDistance(searchPoint, point0);
+            if (Math.abs(distance) < Math.abs(thresh.Distance)) {
+                const squared = pointDistance(searchPoint, point0);
 
-            if (squared < thresh.Squared)
-                result = point0;
+                if (squared < thresh.Squared)
+                    result = point0;
+            }
         }
     }
 
