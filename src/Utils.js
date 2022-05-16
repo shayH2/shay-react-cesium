@@ -4,10 +4,11 @@ import { Cartographic, LabelStyle, Math, Cartesian3 } from 'cesium';
 
 import convert from './classes/Conversions';
 import MyPoint from './classes/Point';
+import Link from './classes/LinkedList/Link';
 
 let arrayOfArrays;
 
-const getDummyPointsArray = (num, roi, coordIndex) => {
+const getDummyPointsArray = (num, roi, coordIndex, list = null) => {
     let pointsArray;
 
     if (!Array.isArray(arrayOfArrays))
@@ -17,7 +18,7 @@ const getDummyPointsArray = (num, roi, coordIndex) => {
     pointsArray = arrayOfArrays[coordIndex];
 
     if (!pointsArray) {
-        pointsArray = initDummyPointsArray(num, roi, coordIndex);
+        pointsArray = initDummyPointsArray(num, roi, coordIndex, list);
 
         arrayOfArrays[coordIndex] = pointsArray;
     }
@@ -25,7 +26,7 @@ const getDummyPointsArray = (num, roi, coordIndex) => {
     return pointsArray;
 };
 
-const initDummyPointsArray = (num, roi, coordIndex) => {
+const initDummyPointsArray = (num, roi, coordIndex, list = null) => {
     const width = roi.right - roi.left;
     const height = roi.top - roi.bottom;
 
@@ -64,7 +65,7 @@ const initDummyPointsArray = (num, roi, coordIndex) => {
         arr[i] = new MyPoint(x, y);
     }
 
-    return initSortedPointsArray(arr, coordIndex);
+    return initSortedPointsArray(arr, coordIndex, list);
 };
 
 const pointInPolygon = (point, polygon, roi = null) => {
@@ -96,7 +97,7 @@ const pointInPolygon = (point, polygon, roi = null) => {
     return inside;
 };
 
-const initSortedPointsArray = (unordered, coordIndex) => {
+const initSortedPointsArray = (unordered, coordIndex, list = null) => {
     const num = unordered.length;
 
     const arr = Array(num).fill(null);
@@ -107,8 +108,55 @@ const initSortedPointsArray = (unordered, coordIndex) => {
 
     begin = end = middle;
 
+    let currLink = null;
+
+    if (list)
+        currLink = list.head || list.tail;
+
     for (let i = 0; i < num; i++) {
         const newPoint = unordered[i];
+
+        const newCoord = newPoint.getCoord(coordIndex)
+
+        const newLink = new Link(newPoint);
+
+        if (!currLink) {
+            currLink = newLink;
+
+            list.init(currLink);
+        } else {
+            let link = currLink;
+
+            let inserted = false;
+
+            let forward = null;
+
+            while (!inserted && link) {
+                let currPoint = link.value;
+
+                let currCoord = currPoint.getCoord(coordIndex);
+
+                if (forward === null)
+                    forward = newCoord > currCoord;
+
+                if ((forward === true && newCoord < currCoord) ||
+                    (forward === false && newCoord >= currCoord)) {
+                    link.insert(newLink, forward);
+                    currLink = link;
+
+                    inserted = true;
+                }
+
+                link = forward
+                    ? link.next
+                    : link.prev;
+            }
+
+            if (inserted === false && link === null) {
+                list.add(newLink, forward);
+                currLink = newLink;
+            }
+        }
 
         let index = middle;
 

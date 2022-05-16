@@ -6,6 +6,7 @@ import MyPoint from './classes/Point';
 import regionOfInterest from './classes/Region';
 import utils from './Utils';
 import './App.css';
+import MyList from './classes/LinkedList/List';
 
 import {
   Ion,
@@ -26,6 +27,7 @@ import {
 import '../node_modules/cesium/Build/Cesium/Widgets/widgets.css';
 import CoordsFormComp from './CoordsFormComp';
 import CitiesComp from './CitiesComp';
+import { List } from '@material-ui/core';
 
 let cesiumViewer;
 
@@ -88,22 +90,31 @@ const App = ({ title }) => {
       },
     });
 
+    const list1 = new MyList();
+    const list2 = new MyList();
+    const list3 = new MyList();
+
     //get dummy points
     const pointsArrayCoord1 = utils.getDummyPointsArray(
       numOfPoints,
       roi,
-      1
+      1,
+      list1
     );
 
     const pointsArrayCoord2 = utils.initSortedPointsArray(
       pointsArrayCoord1,
-      2
+      2,
+      list2
     );
 
     const pointsArrayCoord3 = utils.initSortedPointsArray(
       pointsArrayCoord2,
-      3
+      3,
+      list3
     );
+
+    alert(`list1 = ${list1.getCount()}, list2 = ${list2.getCount()}, list3 = ${list3.getCount()}`);
 
     const groups = utils.groupByDistance(pointsArrayCoord3, 4.85);
 
