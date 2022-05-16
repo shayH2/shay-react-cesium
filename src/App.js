@@ -114,7 +114,9 @@ const App = ({ title }) => {
       list3
     );
 
-    alert(`list1 = ${list1.getCount()}, list2 = ${list2.getCount()}, list3 = ${list3.getCount()}`);
+    //alert(list1);
+
+    //alert(`list1 = ${list1.getCount()}, list2 = ${list2.getCount()}, list3 = ${list3.getCount()}`);
 
     const groups = utils.groupByDistance(pointsArrayCoord3, 4.85);
 

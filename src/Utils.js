@@ -139,7 +139,7 @@ const initSortedPointsArray = (unordered, coordIndex, list = null) => {
                 if (forward === null)
                     forward = newCoord > currCoord;
 
-                if ((forward === true && newCoord < currCoord) ||
+                if ((forward === true && newCoord <= currCoord) ||
                     (forward === false && newCoord >= currCoord)) {
                     link.insert(newLink, forward);
                     currLink = link;

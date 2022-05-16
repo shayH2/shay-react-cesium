@@ -45,4 +45,21 @@ export default class MyList {
 
         return counter;
     }
+
+    toString = (coordIndex = null) => {
+        let str = "";
+
+        let link = this.head;
+
+        while (link) {
+            //str += (coordIndex 
+            //? `${link.value.toString(coordIndex)}, `
+            //: `${link.value.toString()}, `);
+            str += `${link.value.toString()}, `;
+
+            link = link.next;
+        }
+
+        return str;       
+    }
 }
