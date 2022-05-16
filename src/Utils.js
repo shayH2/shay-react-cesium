@@ -117,7 +117,7 @@ const initSortedPointsArray = (unordered, coordIndex, list = null) => {
 
         const newLink = new Link(newPoint);
 
-        console.log(`[${i}], ${newPoint.toString()}`);
+        //console.log(`[${i}], ${newPoint.toString()}`);
 
         if (list.isEmpty()) {
             list.init(newLink);
@@ -147,7 +147,7 @@ const initSortedPointsArray = (unordered, coordIndex, list = null) => {
 
                     inserted = true;
 
-                    console.log(`inserted, current: ${currCoord}, new: ${newCoord}, forward: ${forward}`);
+                    //console.log(`inserted, current: ${currCoord}, new: ${newCoord}, forward: ${forward}`);
                 }
                 else {
                     link = forward
@@ -162,97 +162,115 @@ const initSortedPointsArray = (unordered, coordIndex, list = null) => {
                 currLink = newLink;
             }
         }
+    }
 
-        console.log(`list = ${list.toString0(coordIndex)}`);
+    //console.log(`list = ${list.toString0(coordIndex)}`);
 
-        let index = middle;
+    let link = list.head;
 
-        let currentPoint = arr[index];
+    let index = 0;
 
-        if (!currentPoint) {
-            arr[index] = newPoint;
-            newPoint.indices[coordIndex] = index;
-        } else {
-            while (
-                index <= end &&
-                newPoint.getCoord(coordIndex) >=
-                currentPoint.getCoord(coordIndex)
-            ) {
-                index++;
+    while (link) {
+        const point = link.value;
 
-                if (index <= end) currentPoint = arr[index];
-            }
+        if (point) {
+            point.indices[coordIndex] = index;
 
-            if (index === middle)
-                while (
-                    index >= begin &&
-                    newPoint.getCoord(coordIndex) <=
-                    currentPoint.getCoord(coordIndex)
-                ) {
-                    index--;
+            arr[index++] = point;
 
-                    if (index >= begin) currentPoint = arr[index];
-                }
-
-            index = min(arr.length - 1, index);
-
-            index = max(0, index);
-
-            if (index > end) {
-                arr[index] = newPoint;
-                newPoint.indices[coordIndex] = index;
-
-                end = index;
-            } else if (index < begin) {
-                arr[index] = newPoint;
-                newPoint.indices[coordIndex] = index;
-
-                begin = index;
-            } else {
-                const distFromBegin = index - begin;
-                const distToEnd = end - index;
-
-                let newIndex = index;
-
-                if (
-                    (distFromBegin < distToEnd || end >= arr.length - 1) &&
-                    begin > 0
-                ) {
-                    begin--;
-
-                    if (
-                        arr[index].getCoord(coordIndex) >
-                        newPoint.getCoord(coordIndex)
-                    )
-                        newIndex--;
-
-                    for (let j = begin; j < newIndex; j++) {
-                        arr[j] = arr[j + 1];
-                        arr[j].indices[coordIndex] = j;
-                    }
-                } else {
-                    end++;
-
-                    if (
-                        arr[index].getCoord(coordIndex) <
-                        newPoint.getCoord(coordIndex)
-                    )
-                        newIndex++;
-
-                    for (let j = end; j > newIndex; j--) {
-                        arr[j] = arr[j - 1];
-                        arr[j].indices[coordIndex] = j;
-                    }
-                }
-
-                arr[newIndex] = newPoint;
-                newPoint.indices[coordIndex] = newIndex;
-            }
+            link = link.next;
         }
     }
 
     return arr;
 };
+
+/*
+            let index = middle;
+
+            let currentPoint = arr[index];
+
+            if (!currentPoint) {
+                arr[index] = newPoint;
+                newPoint.indices[coordIndex] = index;
+            } else {
+                while (
+                    index <= end &&
+                    newPoint.getCoord(coordIndex) >=
+                    currentPoint.getCoord(coordIndex)
+                ) {
+                    index++;
+
+                    if (index <= end) currentPoint = arr[index];
+                }
+
+                if (index === middle)
+                    while (
+                        index >= begin &&
+                        newPoint.getCoord(coordIndex) <=
+                        currentPoint.getCoord(coordIndex)
+                    ) {
+                        index--;
+
+                        if (index >= begin) currentPoint = arr[index];
+                    }
+
+                index = min(arr.length - 1, index);
+
+                index = max(0, index);
+
+                if (index > end) {
+                    arr[index] = newPoint;
+                    newPoint.indices[coordIndex] = index;
+
+                    end = index;
+                } else if (index < begin) {
+                    arr[index] = newPoint;
+                    newPoint.indices[coordIndex] = index;
+
+                    begin = index;
+                } else {
+                    const distFromBegin = index - begin;
+                    const distToEnd = end - index;
+
+                    let newIndex = index;
+
+                    if (
+                        (distFromBegin < distToEnd || end >= arr.length - 1) &&
+                        begin > 0
+                    ) {
+                        begin--;
+
+                        if (
+                            arr[index].getCoord(coordIndex) >
+                            newPoint.getCoord(coordIndex)
+                        )
+                            newIndex--;
+
+                        for (let j = begin; j < newIndex; j++) {
+                            arr[j] = arr[j + 1];
+                            arr[j].indices[coordIndex] = j;
+                        }
+                    } else {
+                        end++;
+
+                        if (
+                            arr[index].getCoord(coordIndex) <
+                            newPoint.getCoord(coordIndex)
+                        )
+                            newIndex++;
+
+                        for (let j = end; j > newIndex; j--) {
+                            arr[j] = arr[j - 1];
+                            arr[j].indices[coordIndex] = j;
+                        }
+                    }
+
+                    arr[newIndex] = newPoint;
+                    newPoint.indices[coordIndex] = newIndex;
+                }
+
+*/
 
 const floorDivision = (num, denom) => {
     let remainder = num % denom;

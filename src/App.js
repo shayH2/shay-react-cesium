@@ -65,7 +65,7 @@ const App = ({ title }) => {
     // In both cases, you need to do this to force a reload for the change to take affect.
     cesiumViewer.infoBox.frame.src = 'about:blank';
 
-    const numOfPoints = 5;
+    const numOfPoints = 500;
 
     const centerPoint = roi.center;
 
@@ -114,7 +114,7 @@ const App = ({ title }) => {
       list3
     );
 
-    console.log(`list1 = ${list1.getCount()}, list2 = ${list2.getCount()}, list3 = ${list3.getCount()}`);
+    //console.log(`list1 = ${list1.getCount()}, list2 = ${list2.getCount()}, list3 = ${list3.getCount()}`);
 
     const groups = utils.groupByDistance(pointsArrayCoord3, 4.85);
 
