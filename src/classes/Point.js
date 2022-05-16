@@ -55,5 +55,5 @@ export default class MyPoint {
 
     toString  = () => `(${this.coordX}, ${this.coordY})`;
 
-    toString  = (coordIndex) => this.getCoord(coordIndex).toString();
+    toString0  = (coordIndex) => this.getCoord(coordIndex).toString();
 }

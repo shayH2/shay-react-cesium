@@ -46,7 +46,9 @@ export default class MyList {
         return counter;
     }
 
-    toString = (coordIndex = null) => {
+    isEmpty = () => !this.head;
+
+    toString0 = (coordIndex) => {
         let str = "";
 
         let link = this.head;
@@ -55,10 +57,12 @@ export default class MyList {
             //str += (coordIndex 
             //? `${link.value.toString(coordIndex)}, `
             //: `${link.value.toString()}, `);
-            str += `${link.value.toString()}, `;
+            str += `${link.value.toString0(coordIndex)} -> `;
 
             link = link.next;
         }
+
+        str += "null";
 
         return str;       
     }

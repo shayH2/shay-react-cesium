@@ -110,9 +110,6 @@ const initSortedPointsArray = (unordered, coordIndex, list = null) => {
 
     let currLink = null;
 
-    if (list)
-        currLink = list.head || list.tail;
-
     for (let i = 0; i < num; i++) {
         const newPoint = unordered[i];
 
@@ -120,12 +117,12 @@ const initSortedPointsArray = (unordered, coordIndex, list = null) => {
 
         const newLink = new Link(newPoint);
 
-        if (!currLink) {
-            currLink = newLink;
+        console.log(`[${i}], ${newPoint.toString()}`);
 
-            list.init(currLink);
+        if (list.isEmpty()) {
+            list.init(newLink);
         } else {
-            let link = currLink;
+            let link = currLink || list.head;
 
             let inserted = false;
 
@@ -136,27 +133,37 @@ const initSortedPointsArray = (unordered, coordIndex, list = null) => {
 
                 let currCoord = currPoint.getCoord(coordIndex);
 
-                if (forward === null)
+                if (forward === null) {
                     forward = newCoord > currCoord;
+
+                    //console.log(`current: ${currCoord}, new: ${newCoord}, forward: ${forward}`);
+                }
 
                 if ((forward === true && newCoord <= currCoord) ||
                     (forward === false && newCoord >= currCoord)) {
-                    link.insert(newLink, forward);
+                    link.insert(newLink, !forward);
+
                     currLink = link;
 
                     inserted = true;
-                }
 
-                link = forward
-                    ? link.next
-                    : link.prev;
+                    console.log(`inserted, current: ${currCoord}, new: ${newCoord}, forward: ${forward}`);
+                }
+                else {
+                    link = forward
+                        ? link.next
+                        : link.prev;
+                }
             }
 
             if (inserted === false && link === null) {
+                console.log(`added, new: ${newCoord}, forward: ${forward}`);
                 list.add(newLink, forward);
                 currLink = newLink;
             }
         }
+
+        console.log(`list = ${list.toString0(coordIndex)}`);
 
         let index = middle;
 
