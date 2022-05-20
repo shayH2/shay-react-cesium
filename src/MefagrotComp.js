@@ -6,7 +6,7 @@ import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import regionOfInterest from './classes/Region';
+import regionOfInterest from './classes/GeoPrimitives/MyRegion';
 import axios from 'axios';
 //import max from './Utils';
 
@@ -50,7 +50,10 @@ const MefagrotComp = (props) => {
     for (let i = 0; i < len; i++)
       arr[i] = getNumber(maxDigits);
 
-    arr = [[9],[9,1,2,3],[9,5]];
+    //arr = [[9],[9,1,2,3],[9,5]];
+
+    arr = [[8],[2,0,8],[8,3,0,6],[0,6,8]];
+// [[8],[8,3,0,6],[2,0,8],[0,6,8]]
 
     setQuestion(JSON.stringify(arr));
 

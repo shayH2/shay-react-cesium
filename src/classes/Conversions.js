@@ -2,7 +2,7 @@
 
 import { Cartographic, LabelStyle, Math } from 'cesium';
 
-import MyPoint from './Point';
+import MyPoint from './GeoPrimitives/MyPoint';
 
 const convertSceneCoordinatesToCartesian = (pixels, viewer) =>
     viewer.camera.pickEllipsoid(pixels, viewer.scene.globe.ellipsoid);

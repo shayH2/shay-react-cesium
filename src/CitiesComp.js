@@ -5,7 +5,7 @@ import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import regionOfInterest from './classes/Region';
+import regionOfInterest from './classes/GeoPrimitives/MyRegion';
 import axios from 'axios';
 
 //const sitesUrl = "https://shay-israel-maps.vercel.app/sites";

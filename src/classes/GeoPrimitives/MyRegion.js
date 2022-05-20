@@ -1,4 +1,4 @@
-import MyPoint from './Point';
+import MyPoint from './MyPoint';
 
 export default class regionOfInterest {
     constructor(l, t, r, b) {

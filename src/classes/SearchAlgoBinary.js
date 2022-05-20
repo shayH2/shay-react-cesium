@@ -1,6 +1,6 @@
 'use strict';
 
-import MyPoint from './Point';
+import MyPoint from './GeoPrimitives/MyPoint';
 
 const val = "val";
 const Id = "Id";

@@ -3,7 +3,7 @@
 import { Cartographic, LabelStyle, Math, Cartesian3 } from 'cesium';
 
 import convert from './classes/Conversions';
-import MyPoint from './classes/Point';
+import MyPoint from './classes/GeoPrimitives/MyPoint';
 import Link from './classes/LinkedList/Link';
 
 let arrayOfArrays;
