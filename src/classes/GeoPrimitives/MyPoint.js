@@ -53,7 +53,9 @@ export default class MyPoint {
         if (index === 3) return this.squaredDistance();
     };
 
-    toString  = () => `(${this.coordX}, ${this.coordY})`;
+    toString = () => `(${this.coordX}, ${this.coordY})`;
 
-    toString0  = (coordIndex) => this.getCoord(coordIndex).toString();
+    toString0 = (coordIndex) => this.getCoord(coordIndex).toString();
+
+    getCoordsArray = () => [this.coordX, this.coordY];
 }

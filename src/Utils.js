@@ -82,12 +82,12 @@ const pointInPolygon = (point, polygon, roi = null) => {
     }
 
     for (
-        let i = 0, j = polygon.length - 1; i < polygon.length; j = i++
+        let i = 0, j = polygon.pointsArray.length - 1; i < polygon.pointsArray.length; j = i++
     ) {
-        var xi = polygon[i].x,
-            yi = polygon[i].y;
-        var xj = polygon[j].x,
-            yj = polygon[j].y;
+        var xi = polygon.pointsArray[i].x,
+            yi = polygon.pointsArray[i].y;
+        var xj = polygon.pointsArray[j].x,
+            yj = polygon.pointsArray[j].y;
 
         var intersect =
             yi > y != yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
@@ -148,11 +148,10 @@ const initSortedPointsArray = (unordered, coordIndex, list = null) => {
                     inserted = true;
 
                     //console.log(`inserted, current: ${currCoord}, new: ${newCoord}, forward: ${forward}`);
-                }
-                else {
-                    link = forward
-                        ? link.next
-                        : link.prev;
+                } else {
+                    link = forward ?
+                        link.next :
+                        link.prev;
                 }
             }
 
@@ -425,7 +424,9 @@ export default {
     pointInPolygon,
     groupByDistance,
     getOneDegreeInMeters,
-    sqrt, min, max
+    sqrt,
+    min,
+    max
 };
 
 const CoordsImage = 1;

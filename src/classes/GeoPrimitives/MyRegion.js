@@ -1,4 +1,5 @@
 import MyPoint from './MyPoint';
+import MyPolygon from './MyPolygon';
 
 export default class regionOfInterest {
     constructor(l, t, r, b) {
@@ -15,12 +16,12 @@ export default class regionOfInterest {
     pointInRegion = (point) =>
         point.x > this.left && point.x < this.right && point.y > this.bottom && point.y < this.top;
 
-    toPolygon = () => [
+    toPolygon = () => new MyPolygon([
         new MyPoint(this.left, this.top),
         new MyPoint(this.right, this.top),
         new MyPoint(this.right, this.bottom),
         new MyPoint(this.left, this.bottom),
-    ];
+    ]);
 
     toFlatPolygon = () => [
         this.left,
