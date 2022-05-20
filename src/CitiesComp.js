@@ -83,7 +83,7 @@ const CitiesComp = (props) => {
   };
 
   useLayoutEffect(() => {
-    const sitesFromServer = getCitiesFromServer();
+    //const sitesFromServer = getCitiesFromServer();
 
     initCities();
 
