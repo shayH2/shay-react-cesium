@@ -28,6 +28,7 @@ import '../node_modules/cesium/Build/Cesium/Widgets/widgets.css';
 import CoordsFormComp from './CoordsFormComp';
 import CitiesComp from './CitiesComp';
 import { List } from '@material-ui/core';
+import Mefagrot from './MefagrotComp';
 
 let cesiumViewer;
 
@@ -658,6 +659,9 @@ const App = ({ title }) => {
           <CitiesComp callback={cityPicked} />
 
           <CoordsFormComp callback={setCoordsByForm} />
+        </div>
+        <div>
+        <Mefagrot callback={setCoordsByForm} />
         </div>
       </div>
     </div>
