@@ -6,6 +6,10 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import regionOfInterest from './classes/Region';
+import axios from 'axios';
+
+//const sitesUrl = "https://shay-israel-maps.vercel.app/sites";
+const sitesUrl = "http://localhost:5000/sites";
 
 const CitiesComp = (props) => {
   const [city, setCity] = useState(0);
@@ -39,9 +43,49 @@ const CitiesComp = (props) => {
     },
   ];
 
-  useLayoutEffect(() => {
+  //const getCitiesFromServerAsync = async () => await axios.get(sitesUrl);
+
+  const getCitiesFromServer = () => {
+    axios.get(sitesUrl).then(response => {
+      //console.log(`data = ${JSON.stringify(data)}`);
+      if ("data" in response) {
+        const data = response.data;
+
+        if (data && "sites" in data) {
+          const sites = data.sites;
+
+          if (Array.isArray(sites) && sites.length > 0) {
+            const adds = sites.map(s => {
+              const m = new Map();
+
+              m["name"] = s.name,
+              m["region"] = new regionOfInterest(33, 32, 24, 31);
+
+              return m;
+            });
+
+            cities.push(...adds);
+
+            initCities();
+          }
+        }
+      }
+    });
+  }
+
+  const initCities = () => {
+    const tempMap = new Map();
+
     for (let i = 0; i < cities.length; i++)
-      mapCities.set(i + 1, cities[i]);
+      tempMap.set(i + 1, cities[i]);
+
+    setMapCities(tempMap);
+  };
+
+  useLayoutEffect(() => {
+    const sitesFromServer = getCitiesFromServer();
+
+    initCities();
 
     setCity(mapCities.keys().next().value);
   }, []);
