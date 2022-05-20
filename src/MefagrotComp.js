@@ -45,10 +45,12 @@ const MefagrotComp = (props) => {
 
     const len = minNumbers + parseInt(Math.nextRandomNumber() * (maxNumbers - minNumbers)) + 1;
 
-    const arr = Array(len);
+    let arr = Array(len);
 
     for (let i = 0; i < len; i++)
       arr[i] = getNumber(maxDigits);
+
+    arr = [[9],[9,1,2,3],[9,5]];
 
     setQuestion(JSON.stringify(arr));
 
@@ -80,7 +82,7 @@ const MefagrotComp = (props) => {
       }
 
       if (diff === 0)
-        diff = len1 - len2;
+        diff = len2 - len1;
 
       const operat = diff === 0 ? "=" :
         diff > 0 ? ">" : "<";
