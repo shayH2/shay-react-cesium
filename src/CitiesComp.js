@@ -7,6 +7,8 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import regionOfInterest from './classes/GeoPrimitives/MyRegion';
 import axios from 'axios';
+import MyPolygon from './classes/GeoPrimitives/MyPolygon';
+import MyPoint from './classes/GeoPrimitives/MyPoint';
 
 //const sitesUrl = "https://shay-israel-maps.vercel.app/sites";
 const sitesUrl = "http://localhost:5000/sites";
@@ -58,7 +60,7 @@ const CitiesComp = (props) => {
               const m = new Map();
 
               m["name"] = s.name;
-              m["polygon"] = new regionOfInterest(33, 32, 24, 31).toPolygon();
+              m["polygon"] = new MyPolygon(s.region.map(j => new MyPoint(j.lon, j.lat)));
 
               return m;
             });
